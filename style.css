@@ -10,7 +10,7 @@
 
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: 170px; /* Adjusted back for single row nav */
+    scroll-padding-top: 170px;
 }
 
 body {
@@ -19,6 +19,7 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.6;
+    overflow-x: hidden; /* FIX: PREVENTS HORIZONTAL PAGE SCROLL ON MOBILE */
 }
 
 main {
@@ -26,10 +27,6 @@ main {
     margin: 0 auto;
     padding: 10px;
     padding-top: 0;
-}
-
-h1, h2, h3 {
-    font-weight: 600;
 }
 
 h2 {
@@ -61,7 +58,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    width: 100%;
+    width: 100%; /* Ensures header is full width */
 }
 
 .logo {
@@ -70,35 +67,36 @@ header {
     margin-bottom: 15px;
 }
 
-/* --- NEW: Navigation with Arrows --- */
+/* --- Mobile-First Navigation (with Arrows) --- */
 nav {
-    display: flex; /* This ensures the arrows and links-container are inline */
+    display: flex;
     align-items: center;
-    justify-content: center; /* Centers the entire nav block */
+    justify-content: center;
     background-color: var(--bg-dark);
-    padding: 10px 0; /* Padding for the nav bar itself */
-    position: relative; /* For absolute positioning of arrows */
+    padding: 10px 0;
+    position: relative;
+    width: 100%; /* Ensures nav is full width */
 }
 
 .nav-links-container {
-    flex-grow: 1; /* Allows the container to take available space */
-    max-width: 700px; /* Limit width on very large screens if desired */
     display: flex;
-    overflow-x: auto; /* Enables horizontal scrolling for the links */
+    flex-grow: 1; /* Takes up available space */
+    flex-shrink: 1; /* Allows shrinking */
+    overflow-x: auto; /* Enables horizontal scrolling */
     white-space: nowrap; /* Keeps links in one line */
-    padding: 0 10px; /* Internal padding for links */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    padding: 0 5px; /* Small padding inside */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar Firefox */
 }
 
 .nav-links-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome/Safari */
+    display: none; /* Hide scrollbar Chrome/Safari */
 }
 
 nav a {
-    flex: 0 0 auto; /* Ensures links don't shrink */
+    flex: 0 0 auto;
     padding: 8px 15px;
-    margin: 0 5px; /* Margin between buttons */
+    margin: 0 5px;
     color: var(--gold);
     text-decoration: none;
     font-weight: 600;
@@ -115,15 +113,16 @@ nav a:active {
 }
 
 .scroll-arrow {
-    background-color: transparent; /* Make arrows transparent or styled */
+    background-color: transparent;
     border: none;
-    color: var(--gold); /* Arrow color */
-    font-size: 1.8em; /* Arrow size */
+    color: var(--gold);
+    font-size: 1.8em;
     cursor: pointer;
     padding: 5px 10px;
-    z-index: 10; /* Ensure arrows are above other content */
-    opacity: 0.7; /* Slightly transparent */
+    z-index: 10;
+    opacity: 0.7;
     transition: opacity 0.2s ease-in-out;
+    flex-shrink: 0; /* Prevents arrows from shrinking */
 }
 
 .scroll-arrow:hover {
@@ -132,12 +131,11 @@ nav a:active {
 
 .scroll-arrow.hidden {
     opacity: 0;
-    visibility: hidden; /* Hide completely when not needed */
-    pointer-events: none; /* Prevent interaction when hidden */
+    visibility: hidden;
+    pointer-events: none;
 }
-/* --- END NEW NAV --- */
 
-
+/* ... (Rest of your menu item styles: section, li, .item, .price, etc.) ... */
 /* --- Menu Sections --- */
 section {
     background-color: var(--card-bg);
@@ -146,14 +144,12 @@ section {
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-
 .section-note {
     font-style: italic;
     color: var(--text-subtle);
     border-left: 3px solid var(--gold);
     padding-left: 10px;
 }
-
 /* --- Menu Item List --- */
 li {
     display: flex;
@@ -162,35 +158,29 @@ li {
     padding: 15px 0;
     border-bottom: 1px dashed var(--border-color);
 }
-
 li:last-child {
     border-bottom: none;
 }
-
 .item {
     display: flex;
     flex-direction: column;
     padding-right: 15px;
 }
-
 .item strong {
     font-size: 1.1em;
     color: var(--text-main);
 }
-
 .description {
     font-size: 0.9em;
     color: var(--text-subtle);
     font-style: italic;
 }
-
 .price {
     font-size: 1.1em;
     font-weight: bold;
     color: var(--gold);
     white-space: nowrap;
 }
-
 /* --- Footer --- */
 footer {
     text-align: center;
@@ -199,21 +189,17 @@ footer {
     padding: 20px;
     border-top: 1px solid var(--border-color);
 }
-
 footer p {
     margin: 5px 0;
 }
-
 .disclaimer {
     font-style: italic;
     margin-top: 15px;
 }
-
 /* --- Popup Message --- */
 .hidden {
     display: none !important;
 }
-
 #popup-overlay {
     position: fixed;
     top: 0;
@@ -228,7 +214,6 @@ footer p {
     padding: 20px;
     box-sizing: border-box;
 }
-
 #popup-box {
     background: #fff;
     color: #333;
@@ -239,12 +224,10 @@ footer p {
     max-width: 400px;
     width: 100%;
 }
-
 #popup-box h3 {
     color: #000;
     margin-top: 0;
 }
-
 #close-popup {
     background-color: var(--gold);
     color: #000;
@@ -257,7 +240,24 @@ footer p {
     margin-top: 15px;
     transition: background-color 0.2s;
 }
-
 #close-popup:hover {
     background-color: #b8860b;
+}
+
+
+/* --- NEW: PC/Large Screen Layout --- */
+/* This applies when the screen is 1024px or wider */
+@media (min-width: 1024px) {
+
+    .nav-links-container {
+        overflow-x: visible; /* Disables scrolling */
+        flex-grow: 0; /* Stops it from growing */
+        flex-shrink: 0; /* Stops it from shrinking */
+        justify-content: center; /* Centers the links inside */
+        flex-wrap: wrap; /* Allows wrapping if you add more items */
+    }
+
+    .scroll-arrow {
+        display: none !important; /* Hides the arrows */
+    }
 }
