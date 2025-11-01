@@ -1,7 +1,7 @@
 {
   "promoPopup": {
-    "line1": "This Week: All Lamb dishes 2€ off!",
-    "line2": "Use code LAMM2 at checkout.",
+    "line1": "15% off when you spend 55 €",
+    "line2": "Use code SAVE15 at checkout.",
     "startDate": "2025-11-01",
     "endDate": "2025-11-30"
   },
@@ -11,13 +11,22 @@
       "code": "LAMM2",
       "discountType": "fixed",
       "value": 2.00,
-      "appliesToCategory": "lamm"
+      "appliesToCategory": "lamm",
+      "minValue": 20
+    },
+    {
+      "code": "SAVE15",
+      "discountType": "percent",
+      "value": 0.15,
+      "appliesToCategory": "all",
+      "minValue": 55.00
     },
     {
       "code": "10PROZENT",
       "discountType": "percent",
       "value": 0.10,
-      "appliesToCategory": "all"
+      "appliesToCategory": "all",
+      "minValue": 30
     }
   ]
 }
