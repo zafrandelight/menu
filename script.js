@@ -1,48 +1,72 @@
-// Wait for the full page to load before running the script
-document.addEventListener("DOMContentLoaded", function() {
+// --- Popup Logic (Keep this if you have it, otherwise this is new) ---
+document.addEventListener('DOMContentLoaded', () => {
+    const popupOverlay = document.getElementById('popup-overlay');
+    const closePopupButton = document.getElementById('close-popup');
 
-    // Get the popup elements from the HTML
-    const popupOverlay = document.getElementById("popup-overlay");
-    const closeButton = document.getElementById("close-popup");
-
-    // --- Function to show the popup ---
-    function showPopup() {
+    // Show popup after a delay, e.g., 2 seconds
+    setTimeout(() => {
         if (popupOverlay) {
-            popupOverlay.classList.remove("hidden");
+            popupOverlay.classList.remove('hidden');
         }
-    }
+    }, 2000); // 2000 milliseconds = 2 seconds
 
-    // --- Function to hide the popup ---
-    function hidePopup() {
-        if (popupOverlay) {
-            popupOverlay.classList.add("hidden");
-        }
-    }
-
-    // --- Event Listener ---
-    // When the user clicks the "Close" button, hide the popup
-    if (closeButton) {
-        closeButton.addEventListener("click", hidePopup);
-    }
-    
-    // Also hide the popup if the user clicks on the dark background overlay
-    if (popupOverlay) {
-        popupOverlay.addEventListener("click", function(event) {
-            // Only hide if they click the overlay itself, not the white box
-            if (event.target === popupOverlay) {
-                hidePopup();
+    if (closePopupButton) {
+        closePopupButton.addEventListener('click', () => {
+            if (popupOverlay) {
+                popupOverlay.classList.add('hidden');
             }
         });
     }
 
-    // --- Timer ---
-    // This is the "time to time" logic.
-    // It will show the popup 10 seconds after the page loads.
-    setTimeout(showPopup, 10000); // 10000 milliseconds = 10 seconds
-
-    // If you want it to appear REPEATEDLY (e.g., every 2 minutes),
-    // you would use this line INSTEAD of the setTimeout line:
-    // setInterval(showPopup, 120000); // 120000 ms = 2 minutes
-    
-    // For now, it will just show once, 10 seconds after the user opens the menu.
+    // Close popup if clicking outside the box
+    if (popupOverlay) {
+        popupOverlay.addEventListener('click', (event) => {
+            if (event.target === popupOverlay) {
+                popupOverlay.classList.add('hidden');
+            }
+        });
+    }
 });
+
+
+// --- NEW: Scroll Arrows Logic ---
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinksContainer = document.getElementById('nav-links-container');
+    const scrollLeftBtn = document.getElementById('scroll-left-btn');
+    const scrollRightBtn = document.getElementById('scroll-right-btn');
+
+    if (!navLinksContainer || !scrollLeftBtn || !scrollRightBtn) {
+        // If elements are not found, stop the script
+        return;
+    }
+
+    const scrollAmount = 150; // How many pixels to scroll per click
+
+    // Function to check and update arrow visibility
+    const updateArrowVisibility = () => {
+        // Show right arrow if there's content to scroll to the right
+        if (navLinksContainer.scrollWidth > navLinksContainer.clientWidth + navLinksContainer.scrollLeft) {
+            scrollRightBtn.classList.remove('hidden');
+        } else {
+            scrollRightBtn.classList.add('hidden');
+        }
+
+        // Show left arrow if scrolled past the beginning
+        if (navLinksContainer.scrollLeft > 0) {
+            scrollLeftBtn.classList.remove('hidden');
+        } else {
+            scrollLeftBtn.classList.add('hidden');
+        }
+    };
+
+    // Scroll left button click handler
+    scrollLeftBtn.addEventListener('click', () => {
+        navLinksContainer.scrollBy({
+            left: -scrollAmount,
+            behavior: 'smooth'
+        });
+    });
+
+    // Scroll right button click handler
+    scrollRightBtn.addEventListener('click', () => {
+        nav
