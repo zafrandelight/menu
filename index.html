@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zafran Delight - Restaurant</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="icon" type="image/png" href="favlogo.png"> <link rel="stylesheet" href="style.css?v=20">
+    <link rel="icon" type="image/png" href="favlogo.png"> <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 
@@ -22,8 +22,8 @@
                 </div>
             </div>
         </div>
-        <div id="marquee-container" class="hidden">
-            <p id="marquee-text"></p> 
+        <div id="promo-bar-container" class="hidden">
+            <p id="promo-bar-text"></p>
         </div>
         <nav>
             <div class="nav-wrapper">
@@ -1020,12 +1020,12 @@
             <button id="cart-close-btn">&times;</button>
             
             <div id="cart-content">
-                <h2>Your Order (for pickup)</h2>
+                <h2>Your Order</h2>
                 <p>Payment at the restaurant (Cash or Card).</p>
                 
                 <div id="cart-items-container">
                     </div>
-                
+                <p id="coupon-hint" class="hidden"></p>
                 <div class="coupon-area">
                     <label for="coupon-code">Coupon Code:</label>
                     <input type="text" id="coupon-code" placeholder="e.g. LAMM2">
@@ -1105,9 +1105,10 @@
         </div>
     </div>
 
-    <script src="script.js?v=21"></script>
+    <script src="script.js?v=22"></script>
 </body>
 </html>
+
 
 
 
