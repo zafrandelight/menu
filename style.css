@@ -357,7 +357,7 @@ li:last-child { border-bottom: none; }
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
-    align-items: center; /* This is the fix */
+    align-items: left; /* This is the fix */
 }
 .consent-checkbox input {
     width: auto;
@@ -541,3 +541,4 @@ footer p { margin: 5px 0; }
         font-size: 0.9em;
     }
 }
+
