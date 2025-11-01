@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zaffran Speisekarte</title>
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
 </head>
 <body>
 
@@ -994,15 +994,16 @@
         <p><strong>Zusatzstoffe:</strong> 1) mit Farbstoffen 2) Schwärzungsmittel 3) mit Konservierungsstoffen 4) Schwefeloxid 5) mit Phosphat 6) mit Antioxidationsmittel 7) mit Geschmacksverstärkern 8) gewachst 9) mit Süßungsmittel 10) mit Zuckerart(en) 11) enthält eine Phenylalaninquelle 12) kann bei übermäßigem Verzehr abführend wirken 13) chininhaltig 14) koffeinhaltig 15) Stärke 16) Eiklar 17) Sojaeiweiß 18) mit Milcheweiß</p>
         <p><strong>Allergene:</strong> A) enthält Weizen B) enthält Krebstiere C) enthält Eier D) enthält Fisch E) enthält Erdnüsse F) enthält Soja G) enthält Milch/Laktose H) enthält Pistazien I) enthält Sellerie J) enthält Senf K) enthält Sesamsamen I) enthält Schwefeldioxid und Sulfite M) enthält Lupine N) enthält Weichtiere und Weichtiererzeugnisse</p>
         <p class="disclaimer">Alle Preise inkl. MwSt.. Änderungen, Irrtümer, Druckfehler vorbehalten. Es kann keine Garantie für eine 100% Vollständigkeit der Angaben übernommen werden.</p>
-        <div class="site-credit-footer">
+    </footer>
+
+    <div class="site-credit-footer">
         <p>
-        <a href="imprint.html" target="_blank">Impressum (Imprint)</a> | 
-        <a href="privacy.html" target="_blank">Datenschutzerklärung (Privacy)</a>
+            <a href="imprint.html" target="_blank">Impressum (Imprint)</a> | 
+            <a href="privacy.html" target="_blank">Datenschutzerklärung (Privacy)</a>
         </p>
         <p>&copy; Zafran Delight, Euskirchen 2025</p>
-        <p>Developed by <a href="#" target="_blank" rel="noopener">Shri Avinash Narendhran S V (+49162 3757839)</a></p>
-        </div>
-    </footer>
+        <p>Created & Developed by <a href="https://sanstechno.in/" target="_blank" rel="noopener">SANSTECHNO.IN</a> & Gemini AI</p>
+    </div>
 
     <button id="cart-toggle-btn" class="hidden">
         <span class="cart-icon">🛒</span>
@@ -1052,13 +1053,20 @@
                     
                     <label for="customer-phone">Phone (for questions):</label>
                     <input type="tel" id="customer-phone" name="phone" required>
-
+                    
                     <label for="customer-notes">Notes (optional for allergies, etc.):</label>
                     <textarea id="customer-notes" name="notes" rows="3"></textarea>
-                    <input type="hidden" id="order-details-input" name="order_details">
                     
                     <input type="hidden" id="order-details-input" name="order_details">
                     <input type="hidden" id="order-total-input" name="total">
+
+                    <div class="consent-checkbox">
+                        <input type="checkbox" id="privacy-consent" name="privacy-consent" required>
+                        <label for="privacy-consent">
+                            I have read and agree to the 
+                            <a href="privacy.html" target="_blank">Privacy Policy</a>.
+                        </label>
+                    </div>
 
                     <div class="checkout-buttons">
                         <button type="submit" class="checkout-email">
@@ -1069,17 +1077,6 @@
                             Send via WhatsApp
                         </button>
                     </div>
-                    <input type="hidden" id="order-total-input" name="total">
-                    <div class="consent-checkbox">
-                    <input type="checkbox" id="privacy-consent" name="privacy-consent" required>
-                    <label for="privacy-consent">
-                    I have read and agree to the <a href="privacy.html" target="_blank">Privacy Policy</a>.
-                    </label>
-                    </div>
-                    <div class="checkout-buttons">
-                    <button type="submit" class="checkout-email">
-                    Send via Email
-                    </button>
                 </form>
             </div>
             
@@ -1103,13 +1100,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=13"></script>
+    <script src="script.js?v=14"></script>
 </body>
 </html>
-
-
-
-
-
-
-
