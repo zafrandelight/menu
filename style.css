@@ -9,9 +9,8 @@
 }
 
 html {
-    scroll-behavior: smooth; /* Makes the jump links scroll smoothly */
-    /* Adjust padding to match the new header height if needed */
-    scroll-padding-top: 200px; /* Increased a bit for potential wrapped rows */
+    scroll-behavior: smooth;
+    scroll-padding-top: 170px; /* Adjusted back for single row nav */
 }
 
 body {
@@ -26,7 +25,7 @@ main {
     max-width: 800px;
     margin: 0 auto;
     padding: 10px;
-    padding-top: 0; 
+    padding-top: 0;
 }
 
 h1, h2, h3 {
@@ -53,52 +52,91 @@ ul {
     margin: 0;
 }
 
-/* --- Header, Logo, and Navigation --- */
+/* --- Header, Logo, and Navigation Container --- */
 header {
     background-color: var(--card-bg);
     text-align: center;
-    padding: 20px 0 0 0; 
+    padding: 20px 0 0 0;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    position: sticky; 
+    position: sticky;
     top: 0;
     z-index: 100;
     width: 100%;
 }
 
 .logo {
-    max-width: 180px; /* This controls your logo size! */
+    max-width: 180px;
     height: auto;
     margin-bottom: 15px;
 }
 
-/* --- THIS IS THE UPDATED SECTION --- */
+/* --- NEW: Navigation with Arrows --- */
 nav {
+    display: flex; /* This ensures the arrows and links-container are inline */
+    align-items: center;
+    justify-content: center; /* Centers the entire nav block */
+    background-color: var(--bg-dark);
+    padding: 10px 0; /* Padding for the nav bar itself */
+    position: relative; /* For absolute positioning of arrows */
+}
+
+.nav-links-container {
+    flex-grow: 1; /* Allows the container to take available space */
+    max-width: 700px; /* Limit width on very large screens if desired */
     display: flex;
-    flex-wrap: wrap;          /* THIS MAKES THE TABS WRAP */
-    justify-content: center; /* THIS CENTERS THE TABS */
-    padding: 10px 10px 15px 10px;
-    background-color: var(--bg-dark); 
+    overflow-x: auto; /* Enables horizontal scrolling for the links */
+    white-space: nowrap; /* Keeps links in one line */
+    padding: 0 10px; /* Internal padding for links */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+.nav-links-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
 }
 
 nav a {
-    /* THIS STYLES THE LINKS AS BUTTONS/TABS */
+    flex: 0 0 auto; /* Ensures links don't shrink */
     padding: 8px 15px;
-    margin: 5px; /* Added top/bottom margin for wrapped items */
+    margin: 0 5px; /* Margin between buttons */
     color: var(--gold);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9em;
-    border-radius: 20px; /* "Pill" shape */
+    border-radius: 20px;
     background-color: var(--card-bg);
     transition: background-color 0.2s, color 0.2s;
 }
-/* --- END OF UPDATED SECTION --- */
 
 nav a:hover,
 nav a:active {
     background-color: var(--gold);
     color: #000;
 }
+
+.scroll-arrow {
+    background-color: transparent; /* Make arrows transparent or styled */
+    border: none;
+    color: var(--gold); /* Arrow color */
+    font-size: 1.8em; /* Arrow size */
+    cursor: pointer;
+    padding: 5px 10px;
+    z-index: 10; /* Ensure arrows are above other content */
+    opacity: 0.7; /* Slightly transparent */
+    transition: opacity 0.2s ease-in-out;
+}
+
+.scroll-arrow:hover {
+    opacity: 1;
+}
+
+.scroll-arrow.hidden {
+    opacity: 0;
+    visibility: hidden; /* Hide completely when not needed */
+    pointer-events: none; /* Prevent interaction when hidden */
+}
+/* --- END NEW NAV --- */
+
 
 /* --- Menu Sections --- */
 section {
@@ -132,7 +170,7 @@ li:last-child {
 .item {
     display: flex;
     flex-direction: column;
-    padding-right: 15px; /* Space between item and price */
+    padding-right: 15px;
 }
 
 .item strong {
@@ -150,7 +188,7 @@ li:last-child {
     font-size: 1.1em;
     font-weight: bold;
     color: var(--gold);
-    white-space: nowrap; /* Prevents price from wrapping */
+    white-space: nowrap;
 }
 
 /* --- Footer --- */
@@ -188,7 +226,7 @@ footer p {
     align-items: center;
     z-index: 1000;
     padding: 20px;
-    box-sizing: border-box; /* Ensures padding doesn't break layout */
+    box-sizing: border-box;
 }
 
 #popup-box {
