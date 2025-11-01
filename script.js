@@ -1,14 +1,27 @@
-// --- Popup Logic (Keep this if you have it, otherwise this is new) ---
+// Function to dynamically set the scroll-padding-top
+function updateScrollPadding() {
+    const header = document.querySelector('header');
+    if (header) {
+        // Get the height of the header
+        const headerHeight = header.offsetHeight;
+        // Set a CSS variable on the html element
+        document.documentElement.style.setProperty('scroll-padding-top', `${headerHeight}px`);
+    }
+}
+
+// --- Main Event Listener ---
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 1. Popup Logic ---
     const popupOverlay = document.getElementById('popup-overlay');
     const closePopupButton = document.getElementById('close-popup');
 
-    // Show popup after a delay, e.g., 2 seconds
+    // Show popup after a delay
     setTimeout(() => {
         if (popupOverlay) {
             popupOverlay.classList.remove('hidden');
         }
-    }, 2000); // 2000 milliseconds = 2 seconds
+    }, 5000); // 5 seconds
 
     if (closePopupButton) {
         closePopupButton.addEventListener('click', () => {
@@ -18,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close popup if clicking outside the box
     if (popupOverlay) {
         popupOverlay.addEventListener('click', (event) => {
             if (event.target === popupOverlay) {
@@ -26,47 +38,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
 
-
-// --- NEW: Scroll Arrows Logic ---
-document.addEventListener('DOMContentLoaded', () => {
+    // --- 2. Scroll Arrows Logic ---
     const navLinksContainer = document.getElementById('nav-links-container');
     const scrollLeftBtn = document.getElementById('scroll-left-btn');
     const scrollRightBtn = document.getElementById('scroll-right-btn');
 
-    if (!navLinksContainer || !scrollLeftBtn || !scrollRightBtn) {
-        // If elements are not found, stop the script
-        return;
+    if (navLinksContainer && scrollLeftBtn && scrollRightBtn) {
+        const scrollAmount = 150;
+
+        const updateArrowVisibility = () => {
+            // Check if we can scroll right
+            const maxScroll = navLinksContainer.scrollWidth - navLinksContainer.clientWidth;
+            scrollRightBtn.classList.toggle('hidden', navLinksContainer.scrollLeft >= maxScroll - 1); // -1 for precision
+            
+            // Check if we can scroll left
+            scrollLeftBtn.classList.toggle('hidden', navLinksContainer.scrollLeft <= 0);
+        };
+
+        scrollLeftBtn.addEventListener('click', () => {
+            navLinksContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+
+        scrollRightBtn.addEventListener('click', () => {
+            navLinksContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+
+        navLinksContainer.addEventListener('scroll', updateArrowVisibility);
+        window.addEventListener('resize', updateArrowVisibility);
+        
+        // Initial check
+        updateArrowVisibility();
     }
 
-    const scrollAmount = 150; // How many pixels to scroll per click
+    // --- 3. Dynamic Scroll Padding ---
+    // Initial call when page loads
+    updateScrollPadding();
+});
 
-    // Function to check and update arrow visibility
-    const updateArrowVisibility = () => {
-        // Show right arrow if there's content to scroll to the right
-        if (navLinksContainer.scrollWidth > navLinksContainer.clientWidth + navLinksContainer.scrollLeft) {
-            scrollRightBtn.classList.remove('hidden');
-        } else {
-            scrollRightBtn.classList.add('hidden');
-        }
-
-        // Show left arrow if scrolled past the beginning
-        if (navLinksContainer.scrollLeft > 0) {
-            scrollLeftBtn.classList.remove('hidden');
-        } else {
-            scrollLeftBtn.classList.add('hidden');
-        }
-    };
-
-    // Scroll left button click handler
-    scrollLeftBtn.addEventListener('click', () => {
-        navLinksContainer.scrollBy({
-            left: -scrollAmount,
-            behavior: 'smooth'
-        });
-    });
-
-    // Scroll right button click handler
-    scrollRightBtn.addEventListener('click', () => {
-        nav
+// Also update on window resize, as header height will change
+window.addEventListener('resize', updateScrollPadding);
