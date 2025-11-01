@@ -1,0 +1,13 @@
+{
+  "promoPopup": {
+    "line1": "This Week: All Lamb dishes 2€ off!",
+    "line2": "Use code LAMM2 at checkout.",
+    "startDate": "2025-11-01",
+    "endDate": "2025-11-08"
+  },
+  "coupons": [
+    { "code": "LAMM2", "discountType": "fixed", "value": 2.00 },
+    { "code": "10PROZENT", "discountType": "percent", "value": 0.10 },
+    { "code": "WELCOME5", "discountType": "fixed", "value": 5.00 }
+  ]
+}
