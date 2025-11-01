@@ -65,8 +65,9 @@ header {
 
 /* --- NEW: Marquee Bar --- */
 @keyframes marquee {
-    0%   { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
+    0%   { transform: translateX(100%); } /* Start off-screen right */
+    90%  { transform: translateX(-100%); } /* Scroll all the way left (takes 90% of the time) */
+    100% { transform: translateX(-100%); } /* Stay at the end for 10% of the time (this is the 3-sec pause) */
 }
 #marquee-container {
     background-color: #111; /* Matches footer */
@@ -81,7 +82,7 @@ header {
 #marquee-text {
     display: inline-block;
     padding-left: 100%; /* Starts the text off-screen */
-    animation: marquee 30s linear infinite; /* 30s duration */
+    animation: marquee 20s linear infinite; /* 30s duration */
     margin: 0;
     font-weight: bold; /* Bold text */
 }
@@ -606,5 +607,6 @@ address {
         font-size: 0.9em;
     }
 }
+
 
 
