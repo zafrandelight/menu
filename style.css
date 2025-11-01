@@ -22,6 +22,7 @@ body {
     overflow-x: hidden;
 }
 
+/* Main content is wrapped to 800px */
 main {
     max-width: 800px;
     margin: 0 auto;
@@ -46,89 +47,91 @@ ul {
     margin: 0;
 }
 
-/* --- Header (Logo & Contact) --- */
+/* --- ENTIRE HEADER IS STICKY --- */
 header {
     background-color: var(--card-bg);
-    /* REMOVED position: sticky */
+    position: sticky;
+    top: 0;
+    z-index: 100;
     width: 100%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
+/* This wrapper aligns Logo/Contact to the 800px main content */
+.header-content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 10px; /* Matches main padding */
+}
+
+/* This flexbox makes Logo/Contact side-by-side */
 .header-content {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    flex-direction: column; /* Mobile-first: stack */
-    padding: 15px;
+    padding: 10px 0; /* Mobile padding */
 }
 
 .logo {
-    max-width: 130px;
+    max-width: 100px; /* Small logo for mobile */
     height: auto;
-    margin-bottom: 15px;
+    flex-shrink: 0; /* Prevents logo from shrinking */
 }
 
 .contact-info {
-    text-align: center;
+    text-align: right;
     color: var(--text-main);
-    font-size: 0.9em;
 }
 .contact-info strong {
-    font-size: 1.1em;
+    font-size: 0.9em; /* Small for mobile */
     color: var(--gold);
     display: block;
-    margin-bottom: 5px;
 }
 .contact-info p {
     margin: 0;
-    font-size: 0.9em;
-    line-height: 1.4;
+    font-size: 0.8em; /* Very small for mobile */
+    line-height: 1.3;
     color: var(--text-subtle);
 }
 .phone-link {
     display: block;
-    margin-top: 8px;
+    margin-top: 4px;
     text-decoration: none;
     color: var(--text-main);
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 0.9em; /* Small for mobile */
 }
 .phone-link:hover {
     color: var(--gold);
 }
 
 
-/* Even smaller logo for very small screens */
-@media (max-width: 400px) {
-    .logo {
-        max-width: 100px;
-    }
-}
-
-/* --- Navigation Bar (NOW STICKY) --- */
+/* --- Navigation Bar (inside sticky header) --- */
 nav {
     display: flex;
-    align-items: center;
-    justify-content: center;
     background-color: var(--bg-dark);
-    padding: 10px 0;
     width: 100%;
-    
-    /* NEW STICKY PROPERTIES */
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* This wrapper aligns the nav to the 800px main content */
+.nav-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 10px; /* Matches main padding */
+    display: flex;
+    align-items: center;
+    width: 100%; /* Ensures it fills the 800px wrapper */
+    box-sizing: border-box; /* Includes padding in width */
 }
 
 .nav-links-container {
     display: flex;
     flex-grow: 1;
-    flex-shrink: 1;
     overflow-x: auto;
     white-space: nowrap;
-    padding: 0 5px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    padding: 10px 0; /* Add padding here */
 }
 .nav-links-container::-webkit-scrollbar {
     display: none;
@@ -156,7 +159,7 @@ nav a:active {
     color: var(--gold);
     font-size: 1.8em;
     cursor: pointer;
-    padding: 5px 10px;
+    padding: 5px;
     z-index: 10;
     opacity: 0.7;
     transition: opacity 0.2s ease-in-out;
@@ -283,29 +286,33 @@ footer p {
 /* --- PC/Large Screen Layout --- */
 @media (min-width: 1024px) {
     .header-content {
-        flex-direction: row; /* Side-by-side */
-        justify-content: space-between;
-        padding: 20px 40px; /* PC padding */
+        padding: 20px 0; /* Larger PC padding */
     }
 
     .logo {
         max-width: 180px; /* Larger logo for PC */
-        margin-bottom: 0;
     }
 
-    .contact-info {
-        text-align: right;
-        font-size: 1em;
+    .contact-info strong {
+        font-size: 1.1em; /* Larger font */
+    }
+    .contact-info p {
+        font-size: 0.9em; /* Larger font */
+    }
+    .phone-link {
+        font-size: 1.1em; /* Larger font */
     }
     
+    /* On PC, hide arrows and center nav links */
     .nav-links-container {
         overflow-x: visible;
         flex-grow: 0;
-        flex-shrink: 0;
         justify-content: center;
         flex-wrap: wrap;
     }
-
+    .nav-wrapper {
+        padding: 0 10px; /* Keep padding consistent */
+    }
     .scroll-arrow {
         display: none !important;
     }
