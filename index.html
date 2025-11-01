@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zaffran Speisekarte</title>
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 
@@ -1048,6 +1048,10 @@
                     
                     <label for="customer-phone">Phone (for questions):</label>
                     <input type="tel" id="customer-phone" name="phone" required>
+
+                    <label for="customer-notes">Notes (optional for allergies, etc.):</label>
+                    <textarea id="customer-notes" name="notes" rows="3"></textarea>
+                    <input type="hidden" id="order-details-input" name="order_details">
                     
                     <input type="hidden" id="order-details-input" name="order_details">
                     <input type="hidden" id="order-total-input" name="total">
@@ -1084,9 +1088,10 @@
         </div>
     </div>
 
-    <script src="script.js?v=11"></script>
+    <script src="script.js?v=12"></script>
 </body>
 </html>
+
 
 
 
