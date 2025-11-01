@@ -114,7 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             setTimeout(() => {
                 promoPopup.classList.remove('hidden');
                 localStorage.setItem('promoLastShown', now.toString());
-            }, 3000);
+            }, 10000);
         } else if (isPromoActive()) {
             showMarquee(); // Show marquee immediately if popup is skipped
         }
@@ -499,4 +499,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
+
 
