@@ -57,7 +57,7 @@ header {
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
-/* This wrapper aligns Logo/Contact to the 800px main content */
+/* This wrapper aligns the Logo/Contact info */
 .header-content-wrapper {
     max-width: 800px;
     margin: 0 auto;
@@ -303,7 +303,6 @@ footer p {
         font-size: 1.1em; /* Larger font */
     }
     
-    /* On PC, hide arrows and center nav links */
     .nav-links-container {
         overflow-x: visible;
         flex-grow: 0;
@@ -315,5 +314,12 @@ footer p {
     }
     .scroll-arrow {
         display: none !important;
+    }
+
+    /* --- THIS IS THE NEW FIX --- */
+    /* Reduce padding/margin just for PC to fit on one line */
+    nav a {
+        padding: 8px 11px; /* Tighter horizontal padding */
+        margin: 0 3px;    /* Tighter margin */
     }
 }
