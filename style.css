@@ -10,7 +10,7 @@
 
 html {
     scroll-behavior: smooth;
-    /* This will be set by JavaScript now for perfect accuracy */
+    /* scroll-padding-top will be set by JavaScript */
 }
 
 body {
@@ -26,10 +26,8 @@ main {
     max-width: 800px;
     margin: 0 auto;
     padding: 10px;
-    padding-top: 0;
 }
 
-/* ... h2, h3, ul styles (no changes) ... */
 h2 {
     font-size: 1.8em;
     color: var(--gold);
@@ -48,37 +46,31 @@ ul {
     margin: 0;
 }
 
-/* --- Header, Logo, and Navigation Container --- */
+/* --- Header (Logo & Contact) --- */
 header {
     background-color: var(--card-bg);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    /* REMOVED position: sticky */
     width: 100%;
 }
 
-/* NEW: Header main content block */
 .header-content {
     display: flex;
-    justify-content: center; /* Mobile-first: center alignment */
+    justify-content: center;
     align-items: center;
-    flex-direction: column; /* Mobile-first: stack logo and contact */
-    padding: 15px 15px 0 15px; /* Mobile padding */
+    flex-direction: column; /* Mobile-first: stack */
+    padding: 15px;
 }
 
 .logo {
-    max-width: 130px; /* Mobile logo size */
+    max-width: 130px;
     height: auto;
-    transition: max-width 0.2s ease-in-out, margin-bottom 0.2s ease-in-out;
-    margin-bottom: 15px; /* Space between logo and contact */
+    margin-bottom: 15px;
 }
 
-/* NEW: Contact Info Block */
 .contact-info {
-    text-align: center; /* Mobile alignment */
+    text-align: center;
     color: var(--text-main);
-    font-size: 0.9em; /* Mobile font size */
+    font-size: 0.9em;
 }
 .contact-info strong {
     font-size: 1.1em;
@@ -112,19 +104,22 @@ header {
     }
 }
 
-/* --- Mobile-First Navigation (with Arrows) --- */
+/* --- Navigation Bar (NOW STICKY) --- */
 nav {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--bg-dark);
-    padding: 10px 0; /* Increased padding slightly */
-    position: relative;
+    padding: 10px 0;
     width: 100%;
-    margin-top: 15px; /* Space between contact info and nav */
+    
+    /* NEW STICKY PROPERTIES */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
-/* ... (No changes to nav-links-container, nav a, .scroll-arrow) ... */
 .nav-links-container {
     display: flex;
     flex-grow: 1;
@@ -176,7 +171,6 @@ nav a:active {
     pointer-events: none;
 }
 
-/* ... (No changes to section, li, .item, .price, footer, popup) ... */
 /* --- Menu Sections --- */
 section {
     background-color: var(--card-bg);
@@ -289,25 +283,21 @@ footer p {
 /* --- PC/Large Screen Layout --- */
 @media (min-width: 1024px) {
     .header-content {
-        flex-direction: row; /* Side-by-side on PC */
-        justify-content: space-between; /* Logo left, contact right */
-        padding: 20px 40px 0 40px; /* PC padding */
+        flex-direction: row; /* Side-by-side */
+        justify-content: space-between;
+        padding: 20px 40px; /* PC padding */
     }
 
     .logo {
         max-width: 180px; /* Larger logo for PC */
-        margin-bottom: 0; /* No margin on PC */
+        margin-bottom: 0;
     }
 
     .contact-info {
-        text-align: right; /* Right-align text on PC */
-        font-size: 1em; /* Regular font size on PC */
+        text-align: right;
+        font-size: 1em;
     }
     
-    nav {
-        margin-top: 0; /* No top margin for nav on PC */
-    }
-
     .nav-links-container {
         overflow-x: visible;
         flex-grow: 0;
