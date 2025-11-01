@@ -10,7 +10,8 @@
 
 html {
     scroll-behavior: smooth; /* Makes the jump links scroll smoothly */
-    scroll-padding-top: 170px; /* IMPORTANT: Prevents header from covering titles on jump */
+    /* Adjust padding to match the new header height if needed */
+    scroll-padding-top: 200px; /* Increased a bit for potential wrapped rows */
 }
 
 body {
@@ -25,7 +26,7 @@ main {
     max-width: 800px;
     margin: 0 auto;
     padding: 10px;
-    padding-top: 0; /* Header now handles top spacing */
+    padding-top: 0; 
 }
 
 h1, h2, h3 {
@@ -52,13 +53,13 @@ ul {
     margin: 0;
 }
 
-/* --- NEW: Header, Logo, and Navigation --- */
+/* --- Header, Logo, and Navigation --- */
 header {
     background-color: var(--card-bg);
     text-align: center;
-    padding: 20px 0 0 0; /* Padding top, 0 on bottom for nav */
+    padding: 20px 0 0 0; 
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    position: sticky; /* Makes the header stick to the top */
+    position: sticky; 
     top: 0;
     z-index: 100;
     width: 100%;
@@ -70,33 +71,28 @@ header {
     margin-bottom: 15px;
 }
 
+/* --- THIS IS THE UPDATED SECTION --- */
 nav {
     display: flex;
-    overflow-x: auto; /* THIS MAKES IT SCROLL ON MOBILE */
-    white-space: nowrap;
+    flex-wrap: wrap;          /* THIS MAKES THE TABS WRAP */
+    justify-content: center; /* THIS CENTERS THE TABS */
     padding: 10px 10px 15px 10px;
-    background-color: var(--bg-dark); /* Darker background for the nav bar */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-}
-
-nav::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for Chrome/Safari */
+    background-color: var(--bg-dark); 
 }
 
 nav a {
     /* THIS STYLES THE LINKS AS BUTTONS/TABS */
-    flex: 0 0 auto; /* Ensures links don't shrink */
     padding: 8px 15px;
-    margin: 0 5px;
+    margin: 5px; /* Added top/bottom margin for wrapped items */
     color: var(--gold);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9em;
     border-radius: 20px; /* "Pill" shape */
-    background-color: var(--card-bg); /* Use card-bg, not card-B */
+    background-color: var(--card-bg);
     transition: background-color 0.2s, color 0.2s;
 }
+/* --- END OF UPDATED SECTION --- */
 
 nav a:hover,
 nav a:active {
