@@ -19,7 +19,7 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.6;
-    overflow-x: hidden; /* FIX: PREVENTS HORIZONTAL PAGE SCROLL ON MOBILE */
+    overflow-x: hidden; /* PREVENTS HORIZONTAL PAGE SCROLL ON MOBILE */
 }
 
 main {
@@ -58,13 +58,22 @@ header {
     position: sticky;
     top: 0;
     z-index: 100;
-    width: 100%; /* Ensures header is full width */
+    width: 100%;
 }
 
 .logo {
-    max-width: 180px;
+    max-width: 180px; /* Default size for PC */
     height: auto;
     margin-bottom: 15px;
+    transition: max-width 0.2s ease-in-out; /* Smooth transition */
+}
+
+/* --- NEW: Mobile Logo Size --- */
+/* This applies when the screen is 600px or less */
+@media (max-width: 600px) {
+    .logo {
+        max-width: 130px; /* Smaller logo for mobile */
+    }
 }
 
 /* --- Mobile-First Navigation (with Arrows) --- */
@@ -75,22 +84,22 @@ nav {
     background-color: var(--bg-dark);
     padding: 10px 0;
     position: relative;
-    width: 100%; /* Ensures nav is full width */
+    width: 100%;
 }
 
 .nav-links-container {
     display: flex;
-    flex-grow: 1; /* Takes up available space */
-    flex-shrink: 1; /* Allows shrinking */
-    overflow-x: auto; /* Enables horizontal scrolling */
-    white-space: nowrap; /* Keeps links in one line */
-    padding: 0 5px; /* Small padding inside */
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 0 5px;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
+    scrollbar-width: none;
 }
 
 .nav-links-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar Chrome/Safari */
+    display: none;
 }
 
 nav a {
@@ -122,7 +131,7 @@ nav a:active {
     z-index: 10;
     opacity: 0.7;
     transition: opacity 0.2s ease-in-out;
-    flex-shrink: 0; /* Prevents arrows from shrinking */
+    flex-shrink: 0;
 }
 
 .scroll-arrow:hover {
@@ -135,7 +144,6 @@ nav a:active {
     pointer-events: none;
 }
 
-/* ... (Rest of your menu item styles: section, li, .item, .price, etc.) ... */
 /* --- Menu Sections --- */
 section {
     background-color: var(--card-bg);
@@ -245,7 +253,7 @@ footer p {
 }
 
 
-/* --- NEW: PC/Large Screen Layout --- */
+/* --- PC/Large Screen Layout --- */
 /* This applies when the screen is 1024px or wider */
 @media (min-width: 1024px) {
 
