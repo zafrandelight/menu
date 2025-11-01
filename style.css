@@ -50,7 +50,7 @@ header {
 .contact-info p { margin: 0; font-size: 0.8em; line-height: 1.3; color: var(--text-subtle); }
 .phone-link {
     display: block;
-    margin-top: 4px;
+    margin-top: 2px; /* THIS IS THE FIX (was 4px) */
     text-decoration: none;
     color: var(--text-main);
     font-weight: bold;
@@ -58,13 +58,13 @@ header {
 }
 .phone-link:hover { color: var(--gold); }
 
-/* --- NEW: Marquee Bar --- */
+/* --- Marquee Bar --- */
 @keyframes marquee {
     0%   { transform: translateX(100%); }
     100% { transform: translateX(-100%); }
 }
 #marquee-container {
-    background-color: #111; /* Changed to match footer */
+    background-color: #111;
     color: var(--gold);
     overflow: hidden;
     white-space: nowrap;
@@ -78,13 +78,11 @@ header {
     padding-left: 100%;
     animation: marquee 20s linear infinite;
     margin: 0;
-    font-weight: bold; /* FIX: Made text bold */
+    font-weight: bold;
 }
-/* NEW: This class will be added by JavaScript to pause the animation */
 #marquee-text.paused {
     animation-play-state: paused;
 }
-/* --- END Marquee --- */
 
 /* --- Navigation Bar --- */
 nav { display: flex; background-color: var(--bg-dark); width: 100%; }
