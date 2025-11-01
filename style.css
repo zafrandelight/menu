@@ -550,6 +550,54 @@ footer p { margin: 5px 0; }
 }
 
 
+/* --- Styling for the Privacy Policy Page --- */
+
+.legal-page {
+    /* Ensures the content is centered and readable on large screens */
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.legal-page h3 {
+    /* Separator line for main sections */
+    margin-top: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.legal-page ul {
+    /* Standard list styling */
+    padding-left: 20px;
+    list-style: disc;
+}
+
+/* --- Crucial Style for Data Points (Section 2) --- */
+
+.data-point {
+    /* Adds spacing between individual data items */
+    margin-bottom: 15px;
+    /* Indentation and a vertical line for visual grouping */
+    padding-left: 15px;
+    border-left: 3px solid #ffaa00; /* You can change #ffaa00 to your brand color */
+}
+
+.data-point strong {
+    /* Makes the data category (e.g., 'Verarbeitete Daten') stand out */
+    display: block;
+    margin-bottom: 3px;
+    color: #333; /* Darker text for emphasis */
+}
+
+/* Optional: Style the address for better presentation */
+address {
+    font-style: normal; /* Removes default italic style */
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
 
 
 
