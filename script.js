@@ -1,21 +1,24 @@
-// --- CONFIGURATION ---
-// 1. ADD YOUR WHATSAPP NUMBER HERE (with country code, no + or 00)
-const WHATSAPP_NUMBER = "4917660173800"; // Example: "49123456789" (for Germany)
-
-// 2. ADD YOUR COUPON CODES HERE
-const COUPON_CODES = [
-    { code: "LAMM2", discountType: "fixed", value: 2.00 },
-    { code: "10PROZENT", discountType: "percent", value: 0.10 }
-];
-// --- END CONFIGURATION ---
-
+// --- NO CONFIGURATION HERE ANYMORE ---
+// (All settings are now in config.json)
 
 // Global cart variables
 let cart = [];
 let appliedCoupon = null;
 
-document.addEventListener("DOMContentLoaded", () => {
+// --- NEW: Main function to load config first ---
+document.addEventListener("DOMContentLoaded", async () => {
     
+    let config;
+    try {
+        // Fetch the config file (add cache-buster)
+        const response = await fetch('config.json?v=5');
+        config = await response.json();
+    } catch (error) {
+        console.error("Failed to load config.json", error);
+        // If config fails, use empty defaults
+        config = { promoPopup: {}, coupons: [] };
+    }
+
     // --- 1. Sticky Header Scroll Padding ---
     const header = document.querySelector('header');
     function updateScrollPadding() {
@@ -32,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const scrollLeftBtn = document.getElementById('scroll-left-btn');
     const scrollRightBtn = document.getElementById('scroll-right-btn');
     if (navLinksContainer && scrollLeftBtn && scrollRightBtn) {
+        // (All the scroll logic is the same as before)
         const scrollAmount = 150;
         const updateArrowVisibility = () => {
             const maxScroll = navLinksContainer.scrollWidth - navLinksContainer.clientWidth;
@@ -48,11 +52,27 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(updateArrowVisibility, 100);
     }
 
-    // --- 3. Promotional Popup ---
+    // --- 3. DYNAMIC Promotional Popup ---
+    const promo = config.promoPopup;
     const promoPopup = document.getElementById('popup-overlay');
     const closePromoBtn = document.getElementById('close-popup');
-    if (promoPopup && closePromoBtn) {
-        setTimeout(() => promoPopup.classList.remove('hidden'), 5000);
+
+    if (promoPopup && closePromoBtn && promo.startDate && promo.endDate) {
+        try {
+            const today = new Date();
+            const startDate = new Date(promo.startDate);
+            const endDate = new Date(promo.endDate);
+            endDate.setHours(23, 59, 59, 999); // Set end date to end of day
+
+            // Check if today is between start and end date
+            if (today >= startDate && today <= endDate) {
+                document.getElementById('promo-line-1').innerText = promo.line1;
+                document.getElementById('promo-line-2').innerText = promo.line2;
+                setTimeout(() => promoPopup.classList.remove('hidden'), 3000); // Show after 3 sec
+            }
+        } catch (e) {
+            console.error("Error with promo dates:", e);
+        }
         closePromoBtn.addEventListener('click', () => promoPopup.classList.add('hidden'));
     }
 
@@ -64,41 +84,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartItemCountEl = document.getElementById('cart-item-count');
 
-    // Price/Summary Elements
+    // (Price/Summary Elements, Coupon Elements, Confirmation Elements...)
     const subtotalAmountEl = document.getElementById('subtotal-amount');
     const discountAmountEl = document.getElementById('discount-amount');
     const totalAmountEl = document.getElementById('total-amount');
     const summaryDiscountEl = document.getElementById('summary-discount');
-    
-    // Coupon Elements
     const applyCouponBtn = document.getElementById('apply-coupon-btn');
     const couponCodeInput = document.getElementById('coupon-code');
     const couponMessageEl = document.getElementById('coupon-message');
-    
-    // Confirmation Screen Elements
     const cartContentEl = document.getElementById('cart-content');
     const orderConfirmationEl = document.getElementById('order-confirmation');
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
 
-    // Show/Hide Cart Modal
+    // (All cart functions: openCart, closeCart, addToCart, etc. are the same)
     if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
     if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
     if (confirmationCloseBtn) confirmationCloseBtn.addEventListener('click', closeCart);
     
     function openCart() {
-        // Reset to default view every time cart is opened
         cartContentEl.classList.remove('hidden');
         orderConfirmationEl.classList.add('hidden');
         cartOverlay.classList.remove('hidden');
-        updateCart(); // Recalculate just in case
+        updateCart();
     }
-    
-    function closeCart() {
-        cartOverlay.classList.add('hidden');
-    }
+    function closeCart() { cartOverlay.classList.add('hidden'); }
 
-    // Add Item to Cart
     addButtons.forEach(button => {
         button.addEventListener('click', () => {
             const id = button.dataset.id;
@@ -124,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let itemCount = 0;
 
         if (cart.length === 0) {
-            cartItemsContainer.innerHTML = "<p>Ihr Warenkorb ist leer.</p>";
+            cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
             appliedCoupon = null;
         }
 
@@ -190,60 +201,52 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCart();
     }
 
-    // --- 5. Coupon Logic ---
+    // --- 5. DYNAMIC Coupon Logic ---
     applyCouponBtn.addEventListener('click', () => {
         const code = couponCodeInput.value.trim().toUpperCase();
-        const coupon = COUPON_CODES.find(c => c.code.toUpperCase() === code);
+        // This now uses the COUPON_CODES from the fetched config file
+        const coupon = config.coupons.find(c => c.code.toUpperCase() === code);
 
         if (coupon) {
             appliedCoupon = coupon;
-            couponMessageEl.innerText = `Code "${coupon.code}" angewendet!`;
+            couponMessageEl.innerText = `Code "${coupon.code}" applied!`;
             couponMessageEl.className = 'success';
         } else {
             appliedCoupon = null;
-            couponMessageEl.innerText = "Ungültiger Code.";
+            couponMessageEl.innerText = "Invalid code.";
             couponMessageEl.className = 'error';
         }
         updateCart();
     });
 
-    // --- 6. Checkout Logic ---
+    // --- 6. Checkout Logic (AJAX submission) ---
     const orderForm = document.getElementById('order-form');
     const whatsappBtn = document.getElementById('whatsapp-btn');
     
-    // --- NEW: AJAX Form Submission ---
     orderForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Stop the page from redirecting
-        
+        e.preventDefault();
         const { summaryText, total, discountText } = generateOrderSummary();
         const customerName = document.getElementById('customer-name').value;
         const customerPhone = document.getElementById('customer-phone').value;
 
-        // Populate hidden fields
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
 
         const formData = new FormData(orderForm);
         const submitButton = orderForm.querySelector('.checkout-email');
-        submitButton.innerText = "Sende...";
+        submitButton.innerText = "Sending...";
         submitButton.disabled = true;
 
         fetch(orderForm.action, {
             method: 'POST',
             body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
+            headers: { 'Accept': 'application/json' }
         }).then(response => {
             if (response.ok) {
-                // Show confirmation screen
-                const finalSummary = `Kunde: ${customerName}\nTelefon: ${customerPhone}\n\n${summaryText}\n${discountText}Gesamt: ${total.toFixed(2)} €`;
+                const finalSummary = `Customer: ${customerName}\nPhone: ${customerPhone}\n\n${summaryText}\n${discountText}Total: ${total.toFixed(2)} €`;
                 confirmationSummaryEl.innerText = finalSummary;
-                
                 cartContentEl.classList.add('hidden');
                 orderConfirmationEl.classList.remove('hidden');
-                
-                // Reset everything
                 cart = [];
                 appliedCoupon = null;
                 orderForm.reset();
@@ -253,15 +256,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (Object.hasOwn(data, 'errors')) {
                         alert(data["errors"].map(error => error["message"]).join(", "));
                     } else {
-                        alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
+                        alert("Error sending order. Please try again later.");
                     }
                 });
             }
         }).catch(error => {
-            alert("Fehler beim Senden. Bitte prüfen Sie Ihre Internetverbindung.");
+            alert("Error sending order. Please check your internet connection.");
         }).finally(() => {
-            // Re-enable submit button
-            submitButton.innerText = "Per E-Mail an das Restaurant senden";
+            submitButton.innerText = "Send via Email";
             submitButton.disabled = false;
         });
     });
@@ -271,11 +273,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = document.getElementById('customer-name').value;
         const phone = document.getElementById('customer-phone').value;
         if (!name || !phone) {
-            alert("Bitte geben Sie Ihren Namen und Ihre Telefonnummer an.");
+            alert("Please enter your name and phone number.");
             return;
         }
         const { summaryText, total, discountText } = generateOrderSummary();
-        let whatsappMessage = `*Neue Abhol-Bestellung*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n${discountText}*Gesamt: ${total.toFixed(2)} €*`;
+        // Use the WHATSAPP_NUMBER from the config file
+        const WHATSAPP_NUMBER = config.whatsappNumber;
+        let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
         let encodedMessage = encodeURIComponent(whatsappMessage);
         let whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
         window.open(whatsappURL, '_blank');
@@ -284,7 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function generateOrderSummary() {
         let summaryText = "";
         let subtotal = 0;
-        
         cart.forEach(item => {
             summaryText += `${item.quantity}x ${item.name} (${(item.price * item.quantity).toFixed(2)} €)\n`;
             subtotal += item.price * item.quantity;
@@ -299,11 +302,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 discountAmount = subtotal * appliedCoupon.value;
             }
             discountAmount = Math.min(subtotal, discountAmount);
-            discountText = `Rabatt (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
+            discountText = `Discount (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
         }
-        
         let total = subtotal - discountAmount;
         return { summaryText, subtotal, discountText, total };
     }
 });
-
