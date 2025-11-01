@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css?v=24">
     <style>
         /* Styles for the table selection circle */
-        body {
+      body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -21,44 +21,89 @@
             flex-grow: 1;
             padding: 20px;
         }
+
+        .table-circle-container {
+            position: relative;
+            width: 400px; /* Larger container for the circle */
+            height: 400px;
+            margin: 50px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .table-circle {
             position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 50px auto;
+            width: 100%; /* Fill container */
+            height: 100%;
+            border-radius: 50%; /* Make it a visual circle if needed, but not strictly required */
+            display: flex;
+            justify-content: center; /* Center the image */
+            align-items: center; /* Center the image */
         }
+
         .table-btn {
             display: flex;
             align-items: center;
             justify-content: center;
             position: absolute;
-            width: 70px;
-            height: 70px;
+            width: 60px; /* Slightly smaller buttons for 12 tables */
+            height: 60px;
             background-color: var(--card-bg);
             color: var(--gold);
             border: 2px solid var(--gold);
             border-radius: 50%;
             text-decoration: none;
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
             transition: all 0.2s ease;
+
+            /* Positioning using CSS variables for a perfect circle */
+            top: 50%;
+            left: 50%;
+            margin-left: -30px; /* Half of width to center */
+            margin-top: -30px; /* Half of height to center */
+            transform-origin: 50% 50%; /* Rotate around its own center */
+            transform: rotate(var(--angle)) translate(180px) rotate(calc(-1 * var(--angle)));
+            /* The second rotate is to keep the text upright */
         }
         .table-btn:hover {
             background-color: var(--gold);
             color: #000;
-            transform: scale(1.1);
+            transform: rotate(var(--angle)) translate(180px) rotate(calc(-1 * var(--angle))) scale(1.1);
         }
-        /* This CSS places the 10 tables in a circle */
-        .table-btn:nth-of-type(1) { transform: translate(115px, 0px); }
-        .table-btn:nth-of-type(2) { transform: translate(199px, 49px); }
-        .table-btn:nth-of-type(3) { transform: translate(229px, 150px); }
-        .table-btn:nth-of-type(4) { transform: translate(199px, 251px); }
-        .table-btn:nth-of-type(5) { transform: translate(115px, 300px); }
-        .table-btn:nth-of-type(6) { transform: translate(15px, 300px); }
-        .table-btn:nth-of-type(7) { transform: translate(-19px, 251px); }
-        .table-btn:nth-of-type(8) { transform: translate(-19px, 150px); }
-        .table-btn:nth-of-type(9) { transform: translate(15px, 49px); }
-        .table-btn:nth-of-type(10) { transform: translate(80px, 150px); background-color: var(--bg-dark); } /* Center */
+
+        .center-food-image {
+            width: 200px; /* Size of the image in the center */
+            height: 200px;
+            object-fit: cover; /* Crop and cover the area */
+            border-radius: 50%; /* Make it circular */
+            border: 4px solid var(--gold); /* Optional: border around the image */
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); /* Optional: glowing effect */
+            z-index: 1; /* Ensure it's above the buttons if they overlap slightly */
+        }
+
+        /* Adjust media query for larger screens if needed */
+        @media (min-width: 768px) {
+            .table-circle-container {
+                width: 500px;
+                height: 500px;
+            }
+            .table-btn {
+                width: 70px;
+                height: 70px;
+                margin-left: -35px;
+                margin-top: -35px;
+                transform: rotate(var(--angle)) translate(230px) rotate(calc(-1 * var(--angle)));
+            }
+            .table-btn:hover {
+                transform: rotate(var(--angle)) translate(230px) rotate(calc(-1 * var(--angle))) scale(1.1);
+            }
+            .center-food-image {
+                width: 250px;
+                height: 250px;
+            }
+        }
     </style>
 </head>
 <body>
