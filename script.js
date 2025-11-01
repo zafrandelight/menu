@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=8'); // Match v=8
+        const response = await fetch('config.json?v=11'); // Match v=11
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -56,8 +56,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (promoPopup && closePromoBtn && promo.startDate && promo.endDate) {
         try {
             const today = new Date();
-            const startDate = new Date(promo.startDate);
-            const endDate = new Date(promo.endDate);
+            // Fix for date parsing, ensuring local timezone
+            const [startYear, startMonth, startDay] = promo.startDate.split('-').map(Number);
+            const [endYear, endMonth, endDay] = promo.endDate.split('-').map(Number);
+
+            const startDate = new Date(startYear, startMonth - 1, startDay);
+            const endDate = new Date(endYear, endMonth - 1, endDay);
             endDate.setHours(23, 59, 59, 999); // Set end date to end of day
 
             if (today >= startDate && today <= endDate) {
@@ -108,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const id = button.dataset.id;
             const name = button.dataset.name;
             const price = parseFloat(button.dataset.price);
-            const category = button.dataset.category; // Get category
+            const category = button.dataset.category;
             addToCart(id, name, price, category);
         });
     });
@@ -118,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (existingItem) {
             existingItem.quantity++;
         } else {
-            cart.push({ id, name, price, category, quantity: 1 }); // Save category in cart
+            cart.push({ id, name, price, category, quantity: 1 });
         }
         updateCart();
     }
@@ -130,7 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
-            appliedCoupon = null; // Reset coupon if cart is empty
+            appliedCoupon = null;
         }
 
         cart.forEach(item => {
@@ -150,51 +154,87 @@ document.addEventListener("DOMContentLoaded", async () => {
             itemCount += item.quantity;
         });
 
-        // --- NEW: Advanced Discount Calculation ---
         let discountAmount = 0;
+        let discountText = "Discount:";
+
+        // --- NEW: Re-validate coupon on every cart update ---
         if (appliedCoupon) {
-            let discountableSubtotal = 0;
-            const category = appliedCoupon.appliesToCategory.toLowerCase();
+            let isValid = true;
+            let validationMessage = `Code "${appliedCoupon.code}" applied!`;
+            let validationClass = 'success';
 
-            if (category === "all") {
-                discountableSubtotal = subtotal;
-            } else {
-                cart.forEach(item => {
-                    if (item.category.toLowerCase() === category) {
-                        discountableSubtotal += item.price * item.quantity;
-                    }
-                });
+            // 1. Check Min Value
+            const minValue = appliedCoupon.minValue || 0;
+            if (subtotal < minValue) {
+                isValid = false;
+                validationMessage = `Your total is now below ${minValue.toFixed(2)} €. Coupon removed.`;
+                validationClass = 'error';
             }
 
-            if (appliedCoupon.discountType === 'fixed') {
-                 let applicableItems = 0;
-                cart.forEach(item => {
-                    if (item.category.toLowerCase() === category) {
-                        applicableItems += item.quantity;
+            // 2. Check Category (if still valid)
+            if (isValid) {
+                const category = appliedCoupon.appliesToCategory.toLowerCase();
+                if (category !== "all") {
+                    const hasMatchingItem = cart.some(item => item.category.toLowerCase() === category);
+                    if (!hasMatchingItem) {
+                        isValid = false;
+                        validationMessage = `Coupon removed (no matching items in cart).`;
+                        validationClass = 'error';
                     }
-                });
-                discountAmount = appliedCoupon.value * applicableItems;
-            } 
-            else if (appliedCoupon.discountType === 'percent') {
-                discountAmount = discountableSubtotal * appliedCoupon.value;
+                }
             }
-            
-            discountAmount = Math.min(subtotal, discountAmount);
-            
-            if (discountAmount > 0) {
-                summaryDiscountEl.classList.remove('hidden');
-                discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
+
+            // If all checks passed, calculate discount
+            if (isValid) {
+                couponMessageEl.innerText = validationMessage;
+                couponMessageEl.className = validationClass;
+                
+                let discountableSubtotal = 0;
+                const category = appliedCoupon.appliesToCategory.toLowerCase();
+
+                if (category === "all") {
+                    discountableSubtotal = subtotal;
+                } else {
+                    cart.forEach(item => {
+                        if (item.category.toLowerCase() === category) {
+                            discountableSubtotal += item.price * item.quantity;
+                        }
+                    });
+                }
+
+                if (appliedCoupon.discountType === 'fixed') {
+                    let applicableItems = 0;
+                    cart.forEach(item => {
+                        if (item.category.toLowerCase() === category) {
+                            applicableItems += item.quantity;
+                        }
+                    });
+                    discountAmount = appliedCoupon.value * applicableItems;
+                    discountText = `Discount (${appliedCoupon.code})`;
+                } 
+                else if (appliedCoupon.discountType === 'percent') {
+                    discountAmount = discountableSubtotal * appliedCoupon.value;
+                    discountText = `Discount (${(appliedCoupon.value * 100).toFixed(0)}%)`;
+                }
+                
+                discountAmount = Math.min(subtotal, discountAmount);
             } else {
-                summaryDiscountEl.classList.add('hidden');
-                couponMessageEl.innerText = `Code valid, but no matching items in cart.`;
-                couponMessageEl.className = 'error';
-                appliedCoupon = null; // Remove coupon
+                appliedCoupon = null; // Invalidate coupon
+                couponMessageEl.innerText = validationMessage;
+                couponMessageEl.className = validationClass;
             }
+        }
+        // --- END RE-VALIDATION ---
+        
+        if (discountAmount > 0) {
+            summaryDiscountEl.classList.remove('hidden');
+            summaryDiscountEl.querySelector('span').innerText = discountText;
+            discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
         } else {
             summaryDiscountEl.classList.add('hidden');
-            if (couponMessageEl.innerText !== "Invalid code.") { // Don't clear "invalid" message
-                 couponMessageEl.innerText = "";
-                 couponCodeInput.value = "";
+            if (couponMessageEl.className === "success") { // Clear only if it was previously success
+                couponMessageEl.innerText = "";
+                couponCodeInput.value = "";
             }
         }
         
@@ -232,23 +272,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         const code = couponCodeInput.value.trim().toUpperCase();
         const coupon = config.coupons.find(c => c.code.toUpperCase() === code);
 
+        appliedCoupon = null; // Reset first
+        couponMessageEl.innerText = "";
+
         if (coupon) {
+            // --- NEW: Check Minimum Value ---
+            let currentSubtotal = 0;
+            cart.forEach(item => {
+                currentSubtotal += item.price * item.quantity;
+            });
+            const minValue = coupon.minValue || 0;
+            if (currentSubtotal < minValue) {
+                couponMessageEl.innerText = `You must spend at least ${minValue.toFixed(2)} € to use this code.`;
+                couponMessageEl.className = 'error';
+                updateCart();
+                return;
+            }
+            
+            // --- Check Category ---
             const category = coupon.appliesToCategory.toLowerCase();
             if (category !== "all") {
                 const hasMatchingItem = cart.some(item => item.category.toLowerCase() === category);
                 if (!hasMatchingItem) {
-                    appliedCoupon = null;
                     couponMessageEl.innerText = `You need a '${category}' item to use this code.`;
                     couponMessageEl.className = 'error';
                     updateCart();
                     return;
                 }
             }
+
+            // All checks passed
             appliedCoupon = coupon;
             couponMessageEl.innerText = `Code "${coupon.code}" applied!`;
             couponMessageEl.className = 'success';
         } else {
-            appliedCoupon = null;
             couponMessageEl.innerText = "Invalid code.";
             couponMessageEl.className = 'error';
         }
