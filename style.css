@@ -365,6 +365,8 @@ li:last-child { border-bottom: none; }
     margin-right: 10px;
     flex-shrink: 0;
 }
+/* --- END FIX --- */
+
 .consent-checkbox label {
     font-size: 0.9em;
     font-weight: normal;
@@ -541,5 +543,3 @@ footer p { margin: 5px 0; }
         font-size: 0.9em;
     }
 }
-
-
