@@ -14,7 +14,7 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.6;
-    overflow-x: hidden;
+    overflow-x: hidden; /* This prevents horizontal scrolling */
 }
 main { max-width: 800px; margin: 0 auto; padding: 10px; }
 h2 {
@@ -353,20 +353,18 @@ li:last-child { border-bottom: none; }
     resize: vertical;
 }
 
-/* --- THIS IS THE FIX --- */
+/* --- Consent Checkbox --- */
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
-    align-items: center; /* This vertically centers the checkbox and text */
+    align-items: center; /* This is the fix */
 }
 .consent-checkbox input {
     width: auto;
-    margin-top: 0; /* This fixes the alignment bug */
+    margin-top: 0; /* This is the fix */
     margin-right: 10px;
     flex-shrink: 0;
 }
-/* --- END FIX --- */
-
 .consent-checkbox label {
     font-size: 0.9em;
     font-weight: normal;
