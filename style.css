@@ -65,14 +65,14 @@ header {
 }
 
 .logo {
-    max-width: 180px; /* Adjust size as needed */
+    max-width: 180px; /* This controls your logo size! */
     height: auto;
     margin-bottom: 15px;
 }
 
 nav {
     display: flex;
-    overflow-x: auto; /* Allows horizontal scrolling on mobile */
+    overflow-x: auto; /* THIS MAKES IT SCROLL ON MOBILE */
     white-space: nowrap;
     padding: 10px 10px 15px 10px;
     background-color: var(--bg-dark); /* Darker background for the nav bar */
@@ -85,6 +85,7 @@ nav::-webkit-scrollbar {
 }
 
 nav a {
+    /* THIS STYLES THE LINKS AS BUTTONS/TABS */
     flex: 0 0 auto; /* Ensures links don't shrink */
     padding: 8px 15px;
     margin: 0 5px;
@@ -93,7 +94,7 @@ nav a {
     font-weight: 600;
     font-size: 0.9em;
     border-radius: 20px; /* "Pill" shape */
-    background-color: var(--card-B);
+    background-color: var(--card-bg); /* Use card-bg, not card-B */
     transition: background-color 0.2s, color 0.2s;
 }
 
