@@ -386,7 +386,7 @@ li:last-child { border-bottom: none; }
     margin-top: 10px;
 }
 
-/* --- Footer --- */
+/* --- Allergen Footer --- */
 footer {
     text-align: center;
     font-size: 0.8em;
@@ -396,8 +396,28 @@ footer {
 }
 footer p { margin: 5px 0; }
 .disclaimer { font-style: italic; margin-top: 15px; }
-.hidden { display: none !important; }
 
+/* --- NEW: Site Credit Footer --- */
+.site-credit-footer {
+    background-color: #111;
+    color: var(--text-subtle);
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8em;
+    border-top: 1px solid var(--border-color);
+}
+.site-credit-footer p {
+    margin: 5px 0;
+}
+.site-credit-footer a {
+    color: var(--gold);
+    text-decoration: none;
+}
+.site-credit-footer a:hover {
+    text-decoration: underline;
+}
+
+.hidden { display: none !important; }
 
 /* --- PROMO POPUP STYLES --- */
 #popup-overlay {
