@@ -357,11 +357,14 @@ li:last-child { border-bottom: none; }
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
-    align-items: flex-start; /* Aligns items to the top */
+    align-items: flex-start; /* Aligns checkbox to top */
+    justify-content: flex-start; /* Aligns entire group to the left */
+    max-width: 100%; /* Prevents overflow */
+    flex-wrap: wrap; /* Allows label to wrap if needed */
 }
 .consent-checkbox input {
     width: auto;
-    margin-top: 2px; /* Slight nudge to align with label text */
+    margin-top: 2px;
     margin-right: 10px;
     flex-shrink: 0;
 }
@@ -370,6 +373,7 @@ li:last-child { border-bottom: none; }
     font-weight: normal;
     color: var(--text-subtle);
     line-height: 1.4;
+    max-width: calc(100% - 40px); /* Prevents label from overflowing */
 }
 .consent-checkbox a {
     color: var(--gold);
@@ -542,5 +546,6 @@ footer p { margin: 5px 0; }
         font-size: 0.9em;
     }
 }
+
 
 
