@@ -493,4 +493,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
-
