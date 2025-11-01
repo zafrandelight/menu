@@ -1,4 +1,4 @@
-/* --- Global Styles & Colors --- */ 
+/* --- Global Styles & Colors --- */
 :root {
     --bg-dark: #1a1a1a;
     --card-bg: #2a2a2a;
@@ -365,18 +365,18 @@ li:last-child { border-bottom: none; }
     margin-right: 10px;
     flex-shrink: 0;
 }
-/* --- END FIX --- */
-
 .consent-checkbox label {
     font-size: 0.9em;
     font-weight: normal;
     color: var(--text-subtle);
     margin-top: 0;
+    display: inline; /* This is the fix */
 }
 .consent-checkbox a {
     color: var(--gold);
     text-decoration: underline;
 }
+/* --- END FIX --- */
 
 .checkout-buttons {
     display: flex;
@@ -543,4 +543,3 @@ footer p { margin: 5px 0; }
         font-size: 0.9em;
     }
 }
-
