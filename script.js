@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=11'); // Match v=11
+        const response = await fetch('config.json?v=12'); // Match v=12
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -56,13 +56,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (promoPopup && closePromoBtn && promo.startDate && promo.endDate) {
         try {
             const today = new Date();
-            // Fix for date parsing, ensuring local timezone
             const [startYear, startMonth, startDay] = promo.startDate.split('-').map(Number);
             const [endYear, endMonth, endDay] = promo.endDate.split('-').map(Number);
 
             const startDate = new Date(startYear, startMonth - 1, startDay);
             const endDate = new Date(endYear, endMonth - 1, endDay);
-            endDate.setHours(23, 59, 59, 999); // Set end date to end of day
+            endDate.setHours(23, 59, 59, 999);
 
             if (today >= startDate && today <= endDate) {
                 document.getElementById('promo-line-1').innerText = promo.line1;
@@ -157,13 +156,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         let discountAmount = 0;
         let discountText = "Discount:";
 
-        // --- NEW: Re-validate coupon on every cart update ---
         if (appliedCoupon) {
             let isValid = true;
             let validationMessage = `Code "${appliedCoupon.code}" applied!`;
             let validationClass = 'success';
 
-            // 1. Check Min Value
             const minValue = appliedCoupon.minValue || 0;
             if (subtotal < minValue) {
                 isValid = false;
@@ -171,7 +168,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 validationClass = 'error';
             }
 
-            // 2. Check Category (if still valid)
             if (isValid) {
                 const category = appliedCoupon.appliesToCategory.toLowerCase();
                 if (category !== "all") {
@@ -184,7 +180,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
 
-            // If all checks passed, calculate discount
             if (isValid) {
                 couponMessageEl.innerText = validationMessage;
                 couponMessageEl.className = validationClass;
@@ -203,7 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
                 if (appliedCoupon.discountType === 'fixed') {
-                    let applicableItems = 0;
+                     let applicableItems = 0;
                     cart.forEach(item => {
                         if (item.category.toLowerCase() === category) {
                             applicableItems += item.quantity;
@@ -219,12 +214,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 
                 discountAmount = Math.min(subtotal, discountAmount);
             } else {
-                appliedCoupon = null; // Invalidate coupon
+                appliedCoupon = null;
                 couponMessageEl.innerText = validationMessage;
                 couponMessageEl.className = validationClass;
             }
         }
-        // --- END RE-VALIDATION ---
         
         if (discountAmount > 0) {
             summaryDiscountEl.classList.remove('hidden');
@@ -232,9 +226,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
         } else {
             summaryDiscountEl.classList.add('hidden');
-            if (couponMessageEl.className === "success") { // Clear only if it was previously success
-                couponMessageEl.innerText = "";
-                couponCodeInput.value = "";
+            if (couponMessageEl.className === "success") {
+                 couponMessageEl.innerText = "";
+                 couponCodeInput.value = "";
             }
         }
         
@@ -267,16 +261,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateCart();
     }
 
-    // --- 5. DYNAMIC Coupon Logic ---
+    // --- 5. Coupon Logic ---
     applyCouponBtn.addEventListener('click', () => {
         const code = couponCodeInput.value.trim().toUpperCase();
         const coupon = config.coupons.find(c => c.code.toUpperCase() === code);
 
-        appliedCoupon = null; // Reset first
+        appliedCoupon = null;
         couponMessageEl.innerText = "";
+        couponMessageEl.className = "";
 
         if (coupon) {
-            // --- NEW: Check Minimum Value ---
             let currentSubtotal = 0;
             cart.forEach(item => {
                 currentSubtotal += item.price * item.quantity;
@@ -289,7 +283,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
             
-            // --- Check Category ---
             const category = coupon.appliesToCategory.toLowerCase();
             if (category !== "all") {
                 const hasMatchingItem = cart.some(item => item.category.toLowerCase() === category);
@@ -301,7 +294,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
             }
 
-            // All checks passed
             appliedCoupon = coupon;
             couponMessageEl.innerText = `Code "${coupon.code}" applied!`;
             couponMessageEl.className = 'success';
@@ -321,9 +313,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const { summaryText, total, discountText } = generateOrderSummary();
         const customerName = document.getElementById('customer-name').value;
         const customerPhone = document.getElementById('customer-phone').value;
+        const customerNotes = document.getElementById('customer-notes').value; // NEW
 
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
+        // The 'notes' field is already part of the form, so it will be sent automatically.
 
         const formData = new FormData(orderForm);
         const submitButton = orderForm.querySelector('.checkout-email');
@@ -336,7 +330,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             headers: { 'Accept': 'application/json' }
         }).then(response => {
             if (response.ok) {
-                const finalSummary = `Customer: ${customerName}\nPhone: ${customerPhone}\n\n${summaryText}\n${discountText}Total: ${total.toFixed(2)} €`;
+                let finalSummary = `Customer: ${customerName}\nPhone: ${customerPhone}\n\n${summaryText}\n${discountText}Total: ${total.toFixed(2)} €`;
+                if (customerNotes) { // NEW: Add notes if they exist
+                    finalSummary += `\n\nNotes:\n${customerNotes}`;
+                }
+                
                 confirmationSummaryEl.innerText = finalSummary;
                 cartContentEl.classList.add('hidden');
                 orderConfirmationEl.classList.remove('hidden');
@@ -365,6 +363,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     whatsappBtn.addEventListener('click', () => {
         const name = document.getElementById('customer-name').value;
         const phone = document.getElementById('customer-phone').value;
+        const notes = document.getElementById('customer-notes').value; // NEW
+        
         if (!name || !phone) {
             alert("Please enter your name and phone number.");
             return;
@@ -378,6 +378,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
+        
+        if (notes) { // NEW: Add notes if they exist
+            whatsappMessage += `\n\n*Notes:*\n${notes}`;
+        }
+
         let encodedMessage = encodeURIComponent(whatsappMessage);
         let whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
         window.open(whatsappURL, '_blank');
