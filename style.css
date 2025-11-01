@@ -10,7 +10,8 @@
 
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: 170px;
+    /* Adjusted scroll-padding-top to accommodate smaller header on mobile */
+    scroll-padding-top: 100px; /* Default for smaller screens, will be larger for PC */
 }
 
 body {
@@ -53,7 +54,7 @@ ul {
 header {
     background-color: var(--card-bg);
     text-align: center;
-    padding: 20px 0 0 0;
+    padding: 10px 0 0 0; /* Reduced top padding for mobile */
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: sticky;
     top: 0;
@@ -62,17 +63,16 @@ header {
 }
 
 .logo {
-    max-width: 180px; /* Default size for PC */
+    max-width: 130px; /* Default logo size for smaller screens */
     height: auto;
-    margin-bottom: 15px;
-    transition: max-width 0.2s ease-in-out; /* Smooth transition */
+    margin-bottom: 5px; /* Reduced margin below logo for mobile */
+    transition: max-width 0.2s ease-in-out, margin-bottom 0.2s ease-in-out;
 }
 
-/* --- NEW: Mobile Logo Size --- */
-/* This applies when the screen is 600px or less */
-@media (max-width: 600px) {
+/* Even smaller logo for very small screens */
+@media (max-width: 400px) {
     .logo {
-        max-width: 130px; /* Smaller logo for mobile */
+        max-width: 100px;
     }
 }
 
@@ -82,7 +82,7 @@ nav {
     align-items: center;
     justify-content: center;
     background-color: var(--bg-dark);
-    padding: 10px 0;
+    padding: 5px 0; /* Reduced vertical padding for nav on mobile */
     position: relative;
     width: 100%;
 }
@@ -256,6 +256,22 @@ footer p {
 /* --- PC/Large Screen Layout --- */
 /* This applies when the screen is 1024px or wider */
 @media (min-width: 1024px) {
+    html {
+        scroll-padding-top: 170px; /* Larger padding for PC to account for larger header */
+    }
+
+    header {
+        padding: 20px 0 0 0; /* Revert to larger top padding for PC */
+    }
+
+    .logo {
+        max-width: 180px; /* Larger logo for PC */
+        margin-bottom: 15px; /* Larger margin below logo for PC */
+    }
+
+    nav {
+        padding: 10px 0; /* Larger vertical padding for nav on PC */
+    }
 
     .nav-links-container {
         overflow-x: visible; /* Disables scrolling */
