@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tisch auswählen - Zaffran Delight</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="style.css?v=24">
+    <style>
+        /* Styles for the table selection circle */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .table-selection-main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .table-circle {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 50px auto;
+        }
+        .table-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background-color: var(--card-bg);
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .table-btn:hover {
+            background-color: var(--gold);
+            color: #000;
+            transform: scale(1.1);
+        }
+        /* This CSS places the 10 tables in a circle */
+        .table-btn:nth-of-type(1) { transform: translate(115px, 0px); }
+        .table-btn:nth-of-type(2) { transform: translate(199px, 49px); }
+        .table-btn:nth-of-type(3) { transform: translate(229px, 150px); }
+        .table-btn:nth-of-type(4) { transform: translate(199px, 251px); }
+        .table-btn:nth-of-type(5) { transform: translate(115px, 300px); }
+        .table-btn:nth-of-type(6) { transform: translate(15px, 300px); }
+        .table-btn:nth-of-type(7) { transform: translate(-19px, 251px); }
+        .table-btn:nth-of-type(8) { transform: translate(-19px, 150px); }
+        .table-btn:nth-of-type(9) { transform: translate(15px, 49px); }
+        .table-btn:nth-of-type(10) { transform: translate(80px, 150px); background-color: var(--bg-dark); } /* Center */
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content-wrapper">
+            <div class="header-content">
+                <a href="index.html"><img src="logo.png" alt="Zaffran Logo" class="logo"></a>
+                <div class="contact-info">
+                    <strong>Zafran Delight</strong>
+                    <p>Kessenicher Straße 9<br>53879 Euskirchen</p>
+                    <a href="tel:+4922511290950" class="phone-link"><i class="fa fa-phone"></i> 02251 1290950</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="table-selection-main">
+        <h2 style="text-align: center;">Bitte wählen Sie Ihre Tischnummer</h2>
+        <div class="table-circle">
+            <a href="dine-in-menu.html?table=1" class="table-btn">1</a>
+            <a href="dine-in-menu.html?table=2" class="table-btn">2</a>
+            <a href="dine-in-menu.html?table=3" class="table-btn">3</a>
+            <a href="dine-in-menu.html?table=4" class="table-btn">4</a>
+            <a href="dine-in-menu.html?table=5" class="table-btn">5</a>
+            <a href="dine-in-menu.html?table=6" class="table-btn">6</a>
+            <a href="dine-in-menu.html?table=7" class="table-btn">7</a>
+            <a href="dine-in-menu.html?table=8" class="table-btn">8</a>
+            <a href="dine-in-menu.html?table=9" class="table-btn">9</a>
+            <a href="dine-in-menu.html?table=10" class="table-btn">10</a>
+        </div>
+    </main>
+
+    <div class="site-credit-footer" style="margin-top: auto;">
+        <p>
+            <a href="imprint.html" target="_blank">Impressum (Imprint)</a> | 
+            <a href="privacy.html" target="_blank">Datenschutzerklärung (Privacy)</a>
+        </p>
+        <p>&copy; Zafran Delight, Euskirchen 2025</p>
+        <p>Created & Developed by <a href="https://sanstechno.in/" target="_blank" rel="noopener">SANSTECHNO.IN</a> & Gemini AI</p>
+    </div>
+    
+</body>
+</html>
