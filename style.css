@@ -22,7 +22,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Main content is wrapped to 800px BY DEFAULT (for mobile/tablet) */
+/* Main content is wrapped to 800px */
 main {
     max-width: 800px;
     margin: 0 auto;
@@ -59,7 +59,7 @@ header {
 
 /* This wrapper aligns the Logo/Contact info */
 .header-content-wrapper {
-    max-width: 800px; /* Default width */
+    max-width: 800px;
     margin: 0 auto;
     padding: 0 10px; /* Matches main padding */
 }
@@ -115,7 +115,7 @@ nav {
 
 /* This wrapper aligns the nav to the 800px main content */
 .nav-wrapper {
-    max-width: 800px; /* Default width */
+    max-width: 800px;
     margin: 0 auto;
     padding: 0 10px; /* Matches main padding */
     display: flex;
@@ -285,21 +285,6 @@ footer p {
 
 /* --- PC/Large Screen Layout --- */
 @media (min-width: 1024px) {
-
-    /* --- THIS IS THE NEW FIX --- */
-    /* Make the entire page content wider on PC */
-    main {
-        max-width: 1000px;
-    }
-    .header-content-wrapper {
-        max-width: 1000px;
-    }
-    .nav-wrapper {
-        max-width: 1000px;
-    }
-    /* --- END NEW FIX --- */
-
-
     .header-content {
         padding: 20px 0; /* Larger PC padding */
     }
@@ -322,19 +307,19 @@ footer p {
         overflow-x: visible;
         flex-grow: 0;
         justify-content: center;
-        flex-wrap: nowrap; /* We want one line */
+        flex-wrap: wrap; /* Allow wrapping */
     }
     .nav-wrapper {
-        padding: 0 10px;
+        padding: 0 10px; /* Keep padding consistent */
     }
     .scroll-arrow {
         display: none !important;
     }
 
-    /* We can use the default button size again, remove the old fix */
+    /* --- THIS IS THE FIX --- */
     nav a {
         padding: 8px 15px;
-        margin: 0 5px;
+        margin: 5px; /* Adds 5px space on ALL sides (top, bottom, left, right) */
         font-size: 0.9em;
     }
 }
