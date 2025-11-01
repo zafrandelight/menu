@@ -138,10 +138,8 @@ li:last-child { border-bottom: none; }
     font-weight: bold;
     color: var(--gold);
     white-space: nowrap;
-    /* --- FIX: PRICE ALIGNMENT --- */
     min-width: 60px;
     text-align: right;
-    /* --- END FIX --- */
 }
 .add-btn {
     background-color: var(--gold);
@@ -237,14 +235,24 @@ li:last-child { border-bottom: none; }
     margin: 15px 0;
     padding: 10px 0;
 }
+
+/* --- THIS IS THE FIX --- */
 .cart-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
 }
-.cart-item-name { font-weight: bold; flex-grow: 1; }
-.cart-item-controls { display: flex; align-items: center; margin: 0 10px; }
+.cart-item-name { 
+    font-weight: bold; 
+    flex-grow: 1; 
+    padding-right: 10px; /* Space between name and controls */
+}
+.cart-item-controls { 
+    display: flex; 
+    align-items: center; 
+    flex-shrink: 0; /* Stop controls from shrinking */
+}
 .cart-item-controls button {
     background-color: #555;
     color: #fff;
@@ -254,9 +262,22 @@ li:last-child { border-bottom: none; }
     height: 25px;
     font-weight: bold;
     cursor: pointer;
+    line-height: 25px; /* Better vertical centering */
 }
-.cart-item-controls span { margin: 0 10px; }
-.cart-item-price { font-weight: bold; }
+.cart-item-controls span { 
+    margin: 0 10px; 
+    min-width: 20px; /* Give quantity a fixed width */
+    text-align: center; /* Center the quantity number */
+}
+.cart-item-price { 
+    font-weight: bold; 
+    flex-shrink: 0; /* Stop price from shrinking */
+    min-width: 60px; /* Give price a fixed width */
+    text-align: right; /* Align price to the right */
+    margin-left: 10px; /* Space between controls and price */
+}
+/* --- END FIX --- */
+
 
 /* --- Coupon & Summary --- */
 .coupon-area {
@@ -349,7 +370,7 @@ li:last-child { border-bottom: none; }
 .checkout-email { background-color: var(--gold); color: #000; }
 .checkout-whatsapp { background-color: #25D366; color: #fff; }
 
-/* --- NEW: Order Confirmation Screen --- */
+/* --- Order Confirmation Screen --- */
 #order-confirmation h2 { color: var(--gold); }
 #order-confirmation h3 { font-size: 1.1em; color: var(--text-main); }
 #confirmation-summary {
@@ -358,8 +379,8 @@ li:last-child { border-bottom: none; }
     padding: 10px;
     max-height: 200px;
     overflow-y: auto;
-    white-space: pre-wrap; /* This respects the new lines in the text */
-    font-family: monospace; /* Looks like a receipt */
+    white-space: pre-wrap;
+    font-family: monospace;
     font-size: 0.9em;
     border: 1px solid var(--border-color);
     margin-bottom: 20px;
@@ -383,7 +404,6 @@ footer p { margin: 5px 0; }
 #popup-overlay { /* Your promo popup */ }
 #popup-box { /* Your promo popup */ }
 #close-popup { /* Your promo popup */ }
-
 
 /* --- PC/Large Screen Layout --- */
 @media (min-width: 1024px) {
