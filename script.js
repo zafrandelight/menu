@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=15'); // Match v=15
+        const response = await fetch('config.json?v=16'); // Match v=16
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -95,9 +95,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
     
     const consentCheckbox = document.getElementById('privacy-consent');
-    const orderForm = document.getElementById('order-form'); // Define orderForm here
+    const orderForm = document.getElementById('order-form');
     const emailSubmitBtn = orderForm.querySelector('.checkout-email');
-    const whatsappBtn = document.getElementById('whatsapp-btn'); // Define whatsappBtn here
+    const whatsappBtn = document.getElementById('whatsapp-btn');
     
     if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
     if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
