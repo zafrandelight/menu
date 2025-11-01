@@ -10,8 +10,7 @@
 
 html {
     scroll-behavior: smooth;
-    /* Adjusted scroll-padding-top to accommodate smaller header on mobile */
-    scroll-padding-top: 100px; /* Default for smaller screens, will be larger for PC */
+    /* This will be set by JavaScript now for perfect accuracy */
 }
 
 body {
@@ -20,7 +19,7 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.6;
-    overflow-x: hidden; /* PREVENTS HORIZONTAL PAGE SCROLL ON MOBILE */
+    overflow-x: hidden;
 }
 
 main {
@@ -30,6 +29,7 @@ main {
     padding-top: 0;
 }
 
+/* ... h2, h3, ul styles (no changes) ... */
 h2 {
     font-size: 1.8em;
     color: var(--gold);
@@ -37,13 +37,11 @@ h2 {
     padding-bottom: 5px;
     margin-top: 20px;
 }
-
 h3 {
     font-size: 1.3em;
     color: var(--text-main);
     margin-top: 15px;
 }
-
 ul {
     list-style: none;
     padding: 0;
@@ -53,8 +51,6 @@ ul {
 /* --- Header, Logo, and Navigation Container --- */
 header {
     background-color: var(--card-bg);
-    text-align: center;
-    padding: 10px 0 0 0; /* Reduced top padding for mobile */
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     position: sticky;
     top: 0;
@@ -62,12 +58,52 @@ header {
     width: 100%;
 }
 
-.logo {
-    max-width: 130px; /* Default logo size for smaller screens */
-    height: auto;
-    margin-bottom: 5px; /* Reduced margin below logo for mobile */
-    transition: max-width 0.2s ease-in-out, margin-bottom 0.2s ease-in-out;
+/* NEW: Header main content block */
+.header-content {
+    display: flex;
+    justify-content: center; /* Mobile-first: center alignment */
+    align-items: center;
+    flex-direction: column; /* Mobile-first: stack logo and contact */
+    padding: 15px 15px 0 15px; /* Mobile padding */
 }
+
+.logo {
+    max-width: 130px; /* Mobile logo size */
+    height: auto;
+    transition: max-width 0.2s ease-in-out, margin-bottom 0.2s ease-in-out;
+    margin-bottom: 15px; /* Space between logo and contact */
+}
+
+/* NEW: Contact Info Block */
+.contact-info {
+    text-align: center; /* Mobile alignment */
+    color: var(--text-main);
+    font-size: 0.9em; /* Mobile font size */
+}
+.contact-info strong {
+    font-size: 1.1em;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 5px;
+}
+.contact-info p {
+    margin: 0;
+    font-size: 0.9em;
+    line-height: 1.4;
+    color: var(--text-subtle);
+}
+.phone-link {
+    display: block;
+    margin-top: 8px;
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: bold;
+    font-size: 1.1em;
+}
+.phone-link:hover {
+    color: var(--gold);
+}
+
 
 /* Even smaller logo for very small screens */
 @media (max-width: 400px) {
@@ -82,11 +118,13 @@ nav {
     align-items: center;
     justify-content: center;
     background-color: var(--bg-dark);
-    padding: 5px 0; /* Reduced vertical padding for nav on mobile */
+    padding: 10px 0; /* Increased padding slightly */
     position: relative;
     width: 100%;
+    margin-top: 15px; /* Space between contact info and nav */
 }
 
+/* ... (No changes to nav-links-container, nav a, .scroll-arrow) ... */
 .nav-links-container {
     display: flex;
     flex-grow: 1;
@@ -97,11 +135,9 @@ nav {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
 }
-
 .nav-links-container::-webkit-scrollbar {
     display: none;
 }
-
 nav a {
     flex: 0 0 auto;
     padding: 8px 15px;
@@ -114,13 +150,11 @@ nav a {
     background-color: var(--card-bg);
     transition: background-color 0.2s, color 0.2s;
 }
-
 nav a:hover,
 nav a:active {
     background-color: var(--gold);
     color: #000;
 }
-
 .scroll-arrow {
     background-color: transparent;
     border: none;
@@ -133,17 +167,16 @@ nav a:active {
     transition: opacity 0.2s ease-in-out;
     flex-shrink: 0;
 }
-
 .scroll-arrow:hover {
     opacity: 1;
 }
-
 .scroll-arrow.hidden {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
 }
 
+/* ... (No changes to section, li, .item, .price, footer, popup) ... */
 /* --- Menu Sections --- */
 section {
     background-color: var(--card-bg);
@@ -254,34 +287,36 @@ footer p {
 
 
 /* --- PC/Large Screen Layout --- */
-/* This applies when the screen is 1024px or wider */
 @media (min-width: 1024px) {
-    html {
-        scroll-padding-top: 170px; /* Larger padding for PC to account for larger header */
-    }
-
-    header {
-        padding: 20px 0 0 0; /* Revert to larger top padding for PC */
+    .header-content {
+        flex-direction: row; /* Side-by-side on PC */
+        justify-content: space-between; /* Logo left, contact right */
+        padding: 20px 40px 0 40px; /* PC padding */
     }
 
     .logo {
         max-width: 180px; /* Larger logo for PC */
-        margin-bottom: 15px; /* Larger margin below logo for PC */
+        margin-bottom: 0; /* No margin on PC */
     }
 
+    .contact-info {
+        text-align: right; /* Right-align text on PC */
+        font-size: 1em; /* Regular font size on PC */
+    }
+    
     nav {
-        padding: 10px 0; /* Larger vertical padding for nav on PC */
+        margin-top: 0; /* No top margin for nav on PC */
     }
 
     .nav-links-container {
-        overflow-x: visible; /* Disables scrolling */
-        flex-grow: 0; /* Stops it from growing */
-        flex-shrink: 0; /* Stops it from shrinking */
-        justify-content: center; /* Centers the links inside */
-        flex-wrap: wrap; /* Allows wrapping if you add more items */
+        overflow-x: visible;
+        flex-grow: 0;
+        flex-shrink: 0;
+        justify-content: center;
+        flex-wrap: wrap;
     }
 
     .scroll-arrow {
-        display: none !important; /* Hides the arrows */
+        display: none !important;
     }
 }
