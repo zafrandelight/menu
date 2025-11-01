@@ -235,8 +235,6 @@ li:last-child { border-bottom: none; }
     margin: 15px 0;
     padding: 10px 0;
 }
-
-/* --- THIS IS THE FIX --- */
 .cart-item {
     display: flex;
     align-items: center;
@@ -246,12 +244,12 @@ li:last-child { border-bottom: none; }
 .cart-item-name { 
     font-weight: bold; 
     flex-grow: 1; 
-    padding-right: 10px; /* Space between name and controls */
+    padding-right: 10px;
 }
 .cart-item-controls { 
     display: flex; 
     align-items: center; 
-    flex-shrink: 0; /* Stop controls from shrinking */
+    flex-shrink: 0;
 }
 .cart-item-controls button {
     background-color: #555;
@@ -262,22 +260,20 @@ li:last-child { border-bottom: none; }
     height: 25px;
     font-weight: bold;
     cursor: pointer;
-    line-height: 25px; /* Better vertical centering */
+    line-height: 25px;
 }
 .cart-item-controls span { 
     margin: 0 10px; 
-    min-width: 20px; /* Give quantity a fixed width */
-    text-align: center; /* Center the quantity number */
+    min-width: 20px;
+    text-align: center;
 }
 .cart-item-price { 
     font-weight: bold; 
-    flex-shrink: 0; /* Stop price from shrinking */
-    min-width: 60px; /* Give price a fixed width */
-    text-align: right; /* Align price to the right */
-    margin-left: 10px; /* Space between controls and price */
+    flex-shrink: 0;
+    min-width: 60px;
+    text-align: right;
+    margin-left: 10px;
 }
-/* --- END FIX --- */
-
 
 /* --- Coupon & Summary --- */
 .coupon-area {
@@ -390,7 +386,7 @@ li:last-child { border-bottom: none; }
     margin-top: 10px;
 }
 
-/* --- Footer & Other --- */
+/* --- Footer --- */
 footer {
     text-align: center;
     font-size: 0.8em;
@@ -401,9 +397,53 @@ footer {
 footer p { margin: 5px 0; }
 .disclaimer { font-style: italic; margin-top: 15px; }
 .hidden { display: none !important; }
-#popup-overlay { /* Your promo popup */ }
-#popup-box { /* Your promo popup */ }
-#close-popup { /* Your promo popup */ }
+
+
+/* --- RESTORED PROMO POPUP STYLES --- */
+#popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+#popup-box {
+    background: #fff;
+    color: #333;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    max-width: 400px;
+    width: 100%;
+}
+#popup-box h3 {
+    color: #000;
+    margin-top: 0;
+}
+#close-popup {
+    background-color: var(--gold);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.2s;
+}
+#close-popup:hover {
+    background-color: #b8860b;
+}
+
 
 /* --- PC/Large Screen Layout --- */
 @media (min-width: 1024px) {
