@@ -12,7 +12,7 @@
       "discountType": "fixed",
       "value": 2.00,
       "appliesToCategory": "lamm",
-      "minValue": 20
+      "minValue": 0
     },
     {
       "code": "SAVE15",
