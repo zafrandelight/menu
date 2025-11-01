@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
 // 1. ADD YOUR WHATSAPP NUMBER HERE (with country code, no + or 00)
-const WHATSAPP_NUMBER = "49123456789"; // Example: "49123456789" (for Germany)
+const WHATSAPP_NUMBER = "4917660173800"; // Example: "49123456789" (for Germany)
 
 // 2. ADD YOUR COUPON CODES HERE
 const COUPON_CODES = [
@@ -306,3 +306,4 @@ document.addEventListener("DOMContentLoaded", () => {
         return { summaryText, subtotal, discountText, total };
     }
 });
+
