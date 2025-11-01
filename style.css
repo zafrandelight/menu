@@ -357,16 +357,14 @@ li:last-child { border-bottom: none; }
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
-    align-items: flex-start;       /* Align checkbox to top of label */
-    justify-content: flex-start;   /* Align entire group to the left */
-    flex-wrap: wrap;               /* Allow label text to wrap */
-    max-width: 100%;               /* Prevent overflow */
-    gap: 10px;                     /* Space between checkbox and label */
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    max-width: 100%;
 }
 
 .consent-checkbox input {
     flex-shrink: 0;
-    margin-top: 4px;               /* Align checkbox with label baseline */
 }
 
 .consent-checkbox label {
@@ -374,7 +372,9 @@ li:last-child { border-bottom: none; }
     font-weight: normal;
     color: var(--text-subtle);
     line-height: 1.4;
-    max-width: calc(100% - 40px);  /* Prevent label from overflowing */
+    flex: 1; /* Allows label to use remaining space */
+    display: inline; /* Prevents word-by-word stacking */
+    white-space: normal; /* Allows wrapping only if needed */
 }
 
 .consent-checkbox a {
@@ -548,6 +548,7 @@ footer p { margin: 5px 0; }
         font-size: 0.9em;
     }
 }
+
 
 
 
