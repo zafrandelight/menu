@@ -2,7 +2,7 @@
 let cart = [];
 let appliedCoupon = null;
 
-// --- Main function to load config first ---
+// --- Main function to load config first --- 
 document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
@@ -499,3 +499,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
+
