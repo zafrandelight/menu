@@ -353,35 +353,32 @@ li:last-child { border-bottom: none; }
     resize: vertical;
 }
 
-/* --- Consent Checkbox FIX --- */
+/* --- THIS IS YOUR NEW CHECKBOX STYLE --- */
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
-    align-items: flex-start;       /* Align checkbox to top of label */
-    justify-content: flex-start;   /* Align entire group to the left */
-    flex-wrap: wrap;               /* Allow label text to wrap */
-    max-width: 100%;               /* Prevent overflow */
-    gap: 10px;                     /* Space between checkbox and label */
+    align-items: flex-start;      /* Align checkbox to top of label */
+    justify-content: flex-start;  /* Align entire group to the left */
+    flex-wrap: wrap;              /* Allow label text to wrap */
+    max-width: 100%;              /* Prevent overflow */
+    gap: 10px;                    /* Space between checkbox and label */
 }
-
 .consent-checkbox input {
     flex-shrink: 0;
-    margin-top: 4px;               /* Align checkbox with label baseline */
+    margin-top: 4px;              /* Align checkbox with label baseline */
 }
-
 .consent-checkbox label {
     font-size: 0.9em;
     font-weight: normal;
     color: var(--text-subtle);
     line-height: 1.4;
-    max-width: calc(100% - 40px);  /* Prevent label from overflowing */
+    max-width: calc(100% - 40px); /* Prevent label from overflowing */
 }
-
 .consent-checkbox a {
     color: var(--gold);
     text-decoration: underline;
 }
-/* --- END FIX --- */
+/* --- END NEW CHECKBOX STYLE --- */
 
 .checkout-buttons {
     display: flex;
@@ -505,19 +502,40 @@ footer p { margin: 5px 0; }
 }
 
 /* --- Legal Page Styles --- */
+/* These are the styles you provided for privacy.html/imprint.html */
 .legal-page {
-    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
 }
-.legal-page h2 {
-    border-bottom: 2px solid var(--gold);
-    padding-bottom: 10px;
+.legal-page h3 {
+    margin-top: 25px;
+    border-bottom: 1px solid var(--border-color); /* Changed color */
+    padding-bottom: 5px;
 }
-.legal-page p, .legal-page li {
-    color: var(--text-subtle);
+.legal-page ul {
+    padding-left: 20px;
+    list-style: disc;
 }
-.legal-page a {
-    color: var(--gold);
+.data-point {
+    margin-bottom: 15px;
+    padding-left: 15px;
+    border-left: 3px solid var(--gold); /* Changed color */
 }
+.data-point strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--text-main); /* Changed color */
+}
+address {
+    font-style: normal;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: var(--card-bg); /* Changed color */
+    border-radius: 4px;
+}
+/* --- END Legal Page Styles --- */
 
 
 /* --- PC/Large Screen Layout --- */
@@ -547,54 +565,4 @@ footer p { margin: 5px 0; }
         margin: 0;
         font-size: 0.9em;
     }
-}
-
-
-/* --- Styling for the Privacy Policy Page --- */
-
-.legal-page {
-    /* Ensures the content is centered and readable on large screens */
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    line-height: 1.6;
-}
-
-.legal-page h3 {
-    /* Separator line for main sections */
-    margin-top: 25px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-}
-
-.legal-page ul {
-    /* Standard list styling */
-    padding-left: 20px;
-    list-style: disc;
-}
-
-/* --- Crucial Style for Data Points (Section 2) --- */
-
-.data-point {
-    /* Adds spacing between individual data items */
-    margin-bottom: 15px;
-    /* Indentation and a vertical line for visual grouping */
-    padding-left: 15px;
-    border-left: 3px solid #ffaa00; /* You can change #ffaa00 to your brand color */
-}
-
-.data-point strong {
-    /* Makes the data category (e.g., 'Verarbeitete Daten') stand out */
-    display: block;
-    margin-bottom: 3px;
-    color: #333; /* Darker text for emphasis */
-}
-
-/* Optional: Style the address for better presentation */
-address {
-    font-style: normal; /* Removes default italic style */
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
 }
