@@ -341,7 +341,6 @@ li:last-child { border-bottom: none; }
     font-weight: bold;
 }
 #order-form input,
-/* NEW: Style for the Notes textarea */
 #order-form textarea {
     width: 100%;
     padding: 8px;
@@ -350,8 +349,33 @@ li:last-child { border-bottom: none; }
     border: 1px solid var(--border-color);
     background-color: #333;
     color: var(--text-main);
-    font-family: inherit; /* Make it use the same font as the site */
-    resize: vertical; /* Allow vertical resize, not horizontal */
+    font-family: inherit;
+    resize: vertical;
+}
+
+/* --- THIS IS THE FIX --- */
+.consent-checkbox {
+    margin-top: 20px;
+    display: flex;
+    align-items: center; /* This vertically centers the checkbox and text */
+}
+.consent-checkbox input {
+    width: auto;
+    margin-top: 0; /* This fixes the alignment bug */
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+/* --- END FIX --- */
+
+.consent-checkbox label {
+    font-size: 0.9em;
+    font-weight: normal;
+    color: var(--text-subtle);
+    margin-top: 0;
+}
+.consent-checkbox a {
+    color: var(--gold);
+    text-decoration: underline;
 }
 
 .checkout-buttons {
@@ -368,6 +392,12 @@ li:last-child { border-bottom: none; }
     border-radius: 5px;
     cursor: pointer;
 }
+.checkout-buttons button:disabled {
+    background-color: #555;
+    color: #999;
+    cursor: not-allowed;
+}
+
 .checkout-email { background-color: var(--gold); color: #000; }
 .checkout-whatsapp { background-color: #25D366; color: #fff; }
 
@@ -467,6 +497,21 @@ footer p { margin: 5px 0; }
 }
 #close-popup:hover {
     background-color: #b8860b;
+}
+
+/* --- Legal Page Styles --- */
+.legal-page {
+    line-height: 1.8;
+}
+.legal-page h2 {
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 10px;
+}
+.legal-page p, .legal-page li {
+    color: var(--text-subtle);
+}
+.legal-page a {
+    color: var(--gold);
 }
 
 
