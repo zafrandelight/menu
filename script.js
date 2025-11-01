@@ -1,22 +1,19 @@
-// --- NO CONFIGURATION HERE ANYMORE ---
-// (All settings are now in config.json)
-
 // Global cart variables
 let cart = [];
 let appliedCoupon = null;
 
-// --- NEW: Main function to load config first ---
+// --- Main function to load config first ---
 document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=5');
+        const response = await fetch('config.json?v=7'); // Match v=7
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
         // If config fails, use empty defaults
-        config = { promoPopup: {}, coupons: [] };
+        config = { promoPopup: {}, coupons: [], whatsappNumber: "" };
     }
 
     // --- 1. Sticky Header Scroll Padding ---
@@ -35,7 +32,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const scrollLeftBtn = document.getElementById('scroll-left-btn');
     const scrollRightBtn = document.getElementById('scroll-right-btn');
     if (navLinksContainer && scrollLeftBtn && scrollRightBtn) {
-        // (All the scroll logic is the same as before)
         const scrollAmount = 150;
         const updateArrowVisibility = () => {
             const maxScroll = navLinksContainer.scrollWidth - navLinksContainer.clientWidth;
@@ -64,11 +60,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             const endDate = new Date(promo.endDate);
             endDate.setHours(23, 59, 59, 999); // Set end date to end of day
 
-            // Check if today is between start and end date
             if (today >= startDate && today <= endDate) {
                 document.getElementById('promo-line-1').innerText = promo.line1;
                 document.getElementById('promo-line-2').innerText = promo.line2;
-                setTimeout(() => promoPopup.classList.remove('hidden'), 3000); // Show after 3 sec
+                setTimeout(() => promoPopup.classList.remove('hidden'), 3000);
             }
         } catch (e) {
             console.error("Error with promo dates:", e);
@@ -84,7 +79,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartItemCountEl = document.getElementById('cart-item-count');
 
-    // (Price/Summary Elements, Coupon Elements, Confirmation Elements...)
     const subtotalAmountEl = document.getElementById('subtotal-amount');
     const discountAmountEl = document.getElementById('discount-amount');
     const totalAmountEl = document.getElementById('total-amount');
@@ -97,7 +91,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
 
-    // (All cart functions: openCart, closeCart, addToCart, etc. are the same)
     if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
     if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
     if (confirmationCloseBtn) confirmationCloseBtn.addEventListener('click', closeCart);
@@ -115,16 +108,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             const id = button.dataset.id;
             const name = button.dataset.name;
             const price = parseFloat(button.dataset.price);
-            addToCart(id, name, price);
+            const category = button.dataset.category; // NEW: Get category
+            addToCart(id, name, price, category);
         });
     });
 
-    function addToCart(id, name, price) {
+    function addToCart(id, name, price, category) {
         const existingItem = cart.find(item => item.id === id);
         if (existingItem) {
             existingItem.quantity++;
         } else {
-            cart.push({ id, name, price, quantity: 1 });
+            cart.push({ id, name, price, category, quantity: 1 }); // NEW: Save category in cart
         }
         updateCart();
     }
@@ -156,16 +150,52 @@ document.addEventListener("DOMContentLoaded", async () => {
             itemCount += item.quantity;
         });
 
+        // --- NEW: Advanced Discount Calculation ---
         let discountAmount = 0;
         if (appliedCoupon) {
-            if (appliedCoupon.discountType === 'fixed') {
-                discountAmount = appliedCoupon.value;
-            } else if (appliedCoupon.discountType === 'percent') {
-                discountAmount = subtotal * appliedCoupon.value;
+            let discountableSubtotal = 0;
+
+            if (appliedCoupon.appliesToCategory === "all") {
+                // Discount applies to the whole cart
+                discountableSubtotal = subtotal;
+            } else {
+                // Discount applies ONLY to specific category
+                cart.forEach(item => {
+                    if (item.category === appliedCoupon.appliesToCategory) {
+                        discountableSubtotal += item.price * item.quantity;
+                    }
+                });
             }
-            discountAmount = Math.min(subtotal, discountAmount);
-            summaryDiscountEl.classList.remove('hidden');
-            discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
+
+            // Calculate the discount
+            if (appliedCoupon.discountType === 'fixed') {
+                // "Fixed" now means a fixed amount *per qualifying item*
+                // e.g., "LAMM2" is 2€ off *each* lamb dish
+                let applicableItems = 0;
+                cart.forEach(item => {
+                    if (item.category === appliedCoupon.appliesToCategory) {
+                        applicableItems += item.quantity;
+                    }
+                });
+                discountAmount = appliedCoupon.value * applicableItems;
+            } 
+            else if (appliedCoupon.discountType === 'percent') {
+                // "Percent" applies to the subtotal of qualifying items
+                discountAmount = discountableSubtotal * appliedCoupon.value;
+            }
+            
+            discountAmount = Math.min(subtotal, discountAmount); // Don't discount more than the total
+            
+            if (discountAmount > 0) {
+                summaryDiscountEl.classList.remove('hidden');
+                discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
+            } else {
+                // We applied a code, but it didn't match any items
+                summaryDiscountEl.classList.add('hidden');
+                couponMessageEl.innerText = `Code valid, but no matching items in cart.`;
+                couponMessageEl.className = 'error';
+                appliedCoupon = null; // Remove coupon
+            }
         } else {
             summaryDiscountEl.classList.add('hidden');
             couponMessageEl.innerText = "";
@@ -198,16 +228,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (item.quantity <= 0) {
             cart = cart.filter(item => item.id !== id);
         }
+        // When quantity changes, must recalculate cart
         updateCart();
     }
 
     // --- 5. DYNAMIC Coupon Logic ---
     applyCouponBtn.addEventListener('click', () => {
         const code = couponCodeInput.value.trim().toUpperCase();
-        // This now uses the COUPON_CODES from the fetched config file
         const coupon = config.coupons.find(c => c.code.toUpperCase() === code);
 
         if (coupon) {
+            // Check if cart contains items from this category
+            if (coupon.appliesToCategory !== "all") {
+                const hasMatchingItem = cart.some(item => item.category === coupon.appliesToCategory);
+                if (!hasMatchingItem) {
+                    appliedCoupon = null;
+                    couponMessageEl.innerText = `You need a '${coupon.appliesToCategory}' item to use this code.`;
+                    couponMessageEl.className = 'error';
+                    updateCart();
+                    return;
+                }
+            }
+            // All checks passed
             appliedCoupon = coupon;
             couponMessageEl.innerText = `Code "${coupon.code}" applied!`;
             couponMessageEl.className = 'success';
@@ -216,6 +258,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             couponMessageEl.innerText = "Invalid code.";
             couponMessageEl.className = 'error';
         }
+        // Recalculate cart totals with/without coupon
         updateCart();
     });
 
@@ -265,46 +308,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         }).finally(() => {
             submitButton.innerText = "Send via Email";
             submitButton.disabled = false;
-        });
-    });
-
-    // WhatsApp Submit
-    whatsappBtn.addEventListener('click', () => {
-        const name = document.getElementById('customer-name').value;
-        const phone = document.getElementById('customer-phone').value;
-        if (!name || !phone) {
-            alert("Please enter your name and phone number.");
-            return;
-        }
-        const { summaryText, total, discountText } = generateOrderSummary();
-        // Use the WHATSAPP_NUMBER from the config file
-        const WHATSAPP_NUMBER = config.whatsappNumber;
-        let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
-        let encodedMessage = encodeURIComponent(whatsappMessage);
-        let whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-        window.open(whatsappURL, '_blank');
-    });
-
-    function generateOrderSummary() {
-        let summaryText = "";
-        let subtotal = 0;
-        cart.forEach(item => {
-            summaryText += `${item.quantity}x ${item.name} (${(item.price * item.quantity).toFixed(2)} €)\n`;
-            subtotal += item.price * item.quantity;
-        });
-
-        let discountAmount = 0;
-        let discountText = "";
-        if (appliedCoupon) {
-            if (appliedCoupon.discountType === 'fixed') {
-                discountAmount = appliedCoupon.value;
-            } else if (appliedCoupon.discountType === 'percent') {
-                discountAmount = subtotal * appliedCoupon.value;
-            }
-            discountAmount = Math.min(subtotal, discountAmount);
-            discountText = `Discount (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
-        }
-        let total = subtotal - discountAmount;
-        return { summaryText, subtotal, discountText, total };
-    }
-});
