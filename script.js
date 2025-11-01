@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=12'); // Match v=12
+        const response = await fetch('config.json?v=15'); // Match v=15
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -93,7 +93,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const orderConfirmationEl = document.getElementById('order-confirmation');
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
-
+    
+    const consentCheckbox = document.getElementById('privacy-consent');
+    const orderForm = document.getElementById('order-form'); // Define orderForm here
+    const emailSubmitBtn = orderForm.querySelector('.checkout-email');
+    const whatsappBtn = document.getElementById('whatsapp-btn'); // Define whatsappBtn here
+    
     if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
     if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
     if (confirmationCloseBtn) confirmationCloseBtn.addEventListener('click', closeCart);
@@ -103,8 +108,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         orderConfirmationEl.classList.add('hidden');
         cartOverlay.classList.remove('hidden');
         updateCart();
+        toggleCheckoutButtons();
     }
     function closeCart() { cartOverlay.classList.add('hidden'); }
+
+    function toggleCheckoutButtons() {
+        const isChecked = consentCheckbox.checked;
+        emailSubmitBtn.disabled = !isChecked;
+        whatsappBtn.disabled = !isChecked;
+    }
+    consentCheckbox.addEventListener('change', toggleCheckoutButtons);
 
     addButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -305,24 +318,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // --- 6. Checkout Logic (AJAX submission) ---
-    const orderForm = document.getElementById('order-form');
-    const whatsappBtn = document.getElementById('whatsapp-btn');
-    
     orderForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const { summaryText, total, discountText } = generateOrderSummary();
         const customerName = document.getElementById('customer-name').value;
         const customerPhone = document.getElementById('customer-phone').value;
-        const customerNotes = document.getElementById('customer-notes').value; // NEW
+        const customerNotes = document.getElementById('customer-notes').value;
 
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
-        // The 'notes' field is already part of the form, so it will be sent automatically.
 
         const formData = new FormData(orderForm);
-        const submitButton = orderForm.querySelector('.checkout-email');
-        submitButton.innerText = "Sending...";
-        submitButton.disabled = true;
+        emailSubmitBtn.innerText = "Sending...";
+        emailSubmitBtn.disabled = true;
 
         fetch(orderForm.action, {
             method: 'POST',
@@ -331,7 +339,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }).then(response => {
             if (response.ok) {
                 let finalSummary = `Customer: ${customerName}\nPhone: ${customerPhone}\n\n${summaryText}\n${discountText}Total: ${total.toFixed(2)} €`;
-                if (customerNotes) { // NEW: Add notes if they exist
+                if (customerNotes) {
                     finalSummary += `\n\nNotes:\n${customerNotes}`;
                 }
                 
@@ -341,6 +349,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 cart = [];
                 appliedCoupon = null;
                 orderForm.reset();
+                consentCheckbox.checked = false;
                 updateCart();
             } else {
                 response.json().then(data => {
@@ -354,8 +363,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }).catch(error => {
             alert("Error sending order. Please check your internet connection.");
         }).finally(() => {
-            submitButton.innerText = "Send via Email";
-            submitButton.disabled = false;
+            emailSubmitBtn.innerText = "Send via Email";
+            toggleCheckoutButtons();
         });
     });
 
@@ -363,7 +372,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     whatsappBtn.addEventListener('click', () => {
         const name = document.getElementById('customer-name').value;
         const phone = document.getElementById('customer-phone').value;
-        const notes = document.getElementById('customer-notes').value; // NEW
+        const notes = document.getElementById('customer-notes').value;
         
         if (!name || !phone) {
             alert("Please enter your name and phone number.");
@@ -379,7 +388,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
         
-        if (notes) { // NEW: Add notes if they exist
+        if (notes) {
             whatsappMessage += `\n\n*Notes:*\n${notes}`;
         }
 
@@ -434,4 +443,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         let total = subtotal - discountAmount;
         return { summaryText, subtotal, discountText, total };
     }
+    
+    // Initial check on page load
+    toggleCheckoutButtons();
 });
