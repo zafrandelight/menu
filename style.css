@@ -8,6 +8,11 @@
     --border-color: #444;
 }
 
+html {
+    scroll-behavior: smooth; /* Makes the jump links scroll smoothly */
+    scroll-padding-top: 170px; /* IMPORTANT: Prevents header from covering titles on jump */
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
@@ -20,15 +25,11 @@ main {
     max-width: 800px;
     margin: 0 auto;
     padding: 10px;
+    padding-top: 0; /* Header now handles top spacing */
 }
 
 h1, h2, h3 {
     font-weight: 600;
-}
-
-h1 {
-    font-size: 2.5em;
-    margin-bottom: 0;
 }
 
 h2 {
@@ -51,13 +52,55 @@ ul {
     margin: 0;
 }
 
-/* --- Header --- */
+/* --- NEW: Header, Logo, and Navigation --- */
 header {
-    background: linear-gradient(135deg, var(--gold), #b8860b);
-    color: #000;
+    background-color: var(--card-bg);
     text-align: center;
-    padding: 20px 10px;
+    padding: 20px 0 0 0; /* Padding top, 0 on bottom for nav */
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    position: sticky; /* Makes the header stick to the top */
+    top: 0;
+    z-index: 100;
+    width: 100%;
+}
+
+.logo {
+    max-width: 180px; /* Adjust size as needed */
+    height: auto;
+    margin-bottom: 15px;
+}
+
+nav {
+    display: flex;
+    overflow-x: auto; /* Allows horizontal scrolling on mobile */
+    white-space: nowrap;
+    padding: 10px 10px 15px 10px;
+    background-color: var(--bg-dark); /* Darker background for the nav bar */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+nav::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
+}
+
+nav a {
+    flex: 0 0 auto; /* Ensures links don't shrink */
+    padding: 8px 15px;
+    margin: 0 5px;
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9em;
+    border-radius: 20px; /* "Pill" shape */
+    background-color: var(--card-B);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+nav a:hover,
+nav a:active {
+    background-color: var(--gold);
+    color: #000;
 }
 
 /* --- Menu Sections --- */
