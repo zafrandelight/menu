@@ -4,9 +4,6 @@ const WHATSAPP_NUMBER = "49123456789"; // Example: "49123456789" (for Germany)
 
 // 2. ADD YOUR COUPON CODES HERE
 const COUPON_CODES = [
-    // { code: "CODE_NAME", discountType: "fixed" or "percent", value: amount }
-    // "fixed" value is in Euros (e.g., 2.00 = 2€)
-    // "percent" value is a decimal (e.g., 0.10 = 10%)
     { code: "LAMM2", discountType: "fixed", value: 2.00 },
     { code: "10PROZENT", discountType: "percent", value: 0.10 }
 ];
@@ -34,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const navLinksContainer = document.getElementById('nav-links-container');
     const scrollLeftBtn = document.getElementById('scroll-left-btn');
     const scrollRightBtn = document.getElementById('scroll-right-btn');
-
     if (navLinksContainer && scrollLeftBtn && scrollRightBtn) {
         const scrollAmount = 150;
         const updateArrowVisibility = () => {
@@ -78,10 +74,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const applyCouponBtn = document.getElementById('apply-coupon-btn');
     const couponCodeInput = document.getElementById('coupon-code');
     const couponMessageEl = document.getElementById('coupon-message');
+    
+    // Confirmation Screen Elements
+    const cartContentEl = document.getElementById('cart-content');
+    const orderConfirmationEl = document.getElementById('order-confirmation');
+    const confirmationSummaryEl = document.getElementById('confirmation-summary');
+    const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
 
     // Show/Hide Cart Modal
-    if (cartToggleBtn) cartToggleBtn.addEventListener('click', () => cartOverlay.classList.remove('hidden'));
-    if (cartCloseBtn) cartCloseBtn.addEventListener('click', () => cartOverlay.classList.add('hidden'));
+    if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
+    if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
+    if (confirmationCloseBtn) confirmationCloseBtn.addEventListener('click', closeCart);
+    
+    function openCart() {
+        // Reset to default view every time cart is opened
+        cartContentEl.classList.remove('hidden');
+        orderConfirmationEl.classList.add('hidden');
+        cartOverlay.classList.remove('hidden');
+        updateCart(); // Recalculate just in case
+    }
+    
+    function closeCart() {
+        cartOverlay.classList.add('hidden');
+    }
 
     // Add Item to Cart
     addButtons.forEach(button => {
@@ -110,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = "<p>Ihr Warenkorb ist leer.</p>";
-            appliedCoupon = null; // Reset coupon if cart is empty
+            appliedCoupon = null;
         }
 
         cart.forEach(item => {
@@ -130,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
             itemCount += item.quantity;
         });
 
-        // Calculate Discount
         let discountAmount = 0;
         if (appliedCoupon) {
             if (appliedCoupon.discountType === 'fixed') {
@@ -138,18 +152,17 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (appliedCoupon.discountType === 'percent') {
                 discountAmount = subtotal * appliedCoupon.value;
             }
-            // Ensure discount is not more than total
             discountAmount = Math.min(subtotal, discountAmount);
-            
             summaryDiscountEl.classList.remove('hidden');
             discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
         } else {
             summaryDiscountEl.classList.add('hidden');
+            couponMessageEl.innerText = "";
+            couponCodeInput.value = "";
         }
         
         let total = subtotal - discountAmount;
 
-        // Update Totals UI
         subtotalAmountEl.innerText = `${subtotal.toFixed(2)} €`;
         totalAmountEl.innerText = `${total.toFixed(2)} €`;
         cartItemCountEl.innerText = itemCount;
@@ -198,12 +211,62 @@ document.addEventListener("DOMContentLoaded", () => {
     const orderForm = document.getElementById('order-form');
     const whatsappBtn = document.getElementById('whatsapp-btn');
     
+    // --- NEW: AJAX Form Submission ---
     orderForm.addEventListener('submit', (e) => {
-        const { summaryText, total } = generateOrderSummary();
-        document.getElementById('order-details-input').value = summaryText;
+        e.preventDefault(); // Stop the page from redirecting
+        
+        const { summaryText, total, discountText } = generateOrderSummary();
+        const customerName = document.getElementById('customer-name').value;
+        const customerPhone = document.getElementById('customer-phone').value;
+
+        // Populate hidden fields
+        document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
+
+        const formData = new FormData(orderForm);
+        const submitButton = orderForm.querySelector('.checkout-email');
+        submitButton.innerText = "Sende...";
+        submitButton.disabled = true;
+
+        fetch(orderForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                // Show confirmation screen
+                const finalSummary = `Kunde: ${customerName}\nTelefon: ${customerPhone}\n\n${summaryText}\n${discountText}Gesamt: ${total.toFixed(2)} €`;
+                confirmationSummaryEl.innerText = finalSummary;
+                
+                cartContentEl.classList.add('hidden');
+                orderConfirmationEl.classList.remove('hidden');
+                
+                // Reset everything
+                cart = [];
+                appliedCoupon = null;
+                orderForm.reset();
+                updateCart();
+            } else {
+                response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                        alert(data["errors"].map(error => error["message"]).join(", "));
+                    } else {
+                        alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
+                    }
+                });
+            }
+        }).catch(error => {
+            alert("Fehler beim Senden. Bitte prüfen Sie Ihre Internetverbindung.");
+        }).finally(() => {
+            // Re-enable submit button
+            submitButton.innerText = "Per E-Mail an das Restaurant senden";
+            submitButton.disabled = false;
+        });
     });
 
+    // WhatsApp Submit
     whatsappBtn.addEventListener('click', () => {
         const name = document.getElementById('customer-name').value;
         const phone = document.getElementById('customer-phone').value;
@@ -240,6 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         let total = subtotal - discountAmount;
-        return { summaryText, total, discountText };
+        return { summaryText, subtotal, discountText, total };
     }
 });
