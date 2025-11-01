@@ -64,7 +64,7 @@ header {
     100% { transform: translateX(-100%); }
 }
 #marquee-container {
-    background-color: #000;
+    background-color: #111; /* Changed to match footer */
     color: var(--gold);
     overflow: hidden;
     white-space: nowrap;
@@ -78,7 +78,11 @@ header {
     padding-left: 100%;
     animation: marquee 20s linear infinite;
     margin: 0;
-    font-weight: 600;
+    font-weight: bold; /* FIX: Made text bold */
+}
+/* NEW: This class will be added by JavaScript to pause the animation */
+#marquee-text.paused {
+    animation-play-state: paused;
 }
 /* --- END Marquee --- */
 
@@ -382,22 +386,22 @@ li:last-child { border-bottom: none; }
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
-    align-items: flex-start;      /* Align checkbox to top of label */
-    justify-content: flex-start;  /* Align entire group to the left */
-    flex-wrap: wrap;              /* Allow label text to wrap */
-    max-width: 100%;              /* Prevent overflow */
-    gap: 10px;                    /* Space between checkbox and label */
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    max-width: 100%;
+    gap: 10px;
 }
 .consent-checkbox input {
     flex-shrink: 0;
-    margin-top: 4px;              /* Align checkbox with label baseline */
+    margin-top: 4px;
 }
 .consent-checkbox label {
     font-size: 0.9em;
     font-weight: normal;
     color: var(--text-subtle);
     line-height: 1.4;
-    max-width: calc(100% - 40px); /* Prevent label from overflowing */
+    max-width: calc(100% - 40px);
 }
 .consent-checkbox a {
     color: var(--gold);
