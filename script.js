@@ -7,12 +7,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
     try {
-        // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=19'); // Match v=19
+        const response = await fetch('config.json?v=20'); // Match v=20
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
-        // If config fails, use empty defaults
         config = { promoPopup: {}, coupons: [], whatsappNumber: "" };
     }
 
@@ -32,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const scrollLeftBtn = document.getElementById('scroll-left-btn');
     const scrollRightBtn = document.getElementById('scroll-right-btn');
     if (navLinksContainer && scrollLeftBtn && scrollRightBtn) {
+        // (Scroll logic is the same)
         const scrollAmount = 150;
         const updateArrowVisibility = () => {
             const maxScroll = navLinksContainer.scrollWidth - navLinksContainer.clientWidth;
@@ -48,45 +47,68 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(updateArrowVisibility, 100);
     }
 
-    // --- 3. DYNAMIC Promotional Popup ---
+    // --- 3. DYNAMIC Promotional Popup & Marquee ---
     const promo = config.promoPopup;
     const promoPopup = document.getElementById('popup-overlay');
     const closePromoBtn = document.getElementById('close-popup');
+    const marqueeContainer = document.getElementById('marquee-container');
+    const marqueeText = document.getElementById('marquee-text');
 
-    if (promoPopup && closePromoBtn && promo.startDate && promo.endDate) {
-        
-        // NEW: Check if popup has already been shown this session
-        if (sessionStorage.getItem('promoShown') === 'true') {
-            // It has been shown, so do nothing.
-        } else {
-            // It has not been shown, so check the dates
-            try {
-                const today = new Date();
-                const [startYear, startMonth, startDay] = promo.startDate.split('-').map(Number);
-                const [endYear, endMonth, endDay] = promo.endDate.split('-').map(Number);
-
-                const startDate = new Date(startYear, startMonth - 1, startDay);
-                const endDate = new Date(endYear, endMonth - 1, endDay);
-                endDate.setHours(23, 59, 59, 999);
-
-                if (today >= startDate && today <= endDate) {
-                    document.getElementById('promo-line-1').innerText = promo.line1;
-                    document.getElementById('promo-line-2').innerText = promo.line2;
-                    setTimeout(() => {
-                        promoPopup.classList.remove('hidden');
-                        // NEW: Set the flag so it doesn't show again this session
-                        sessionStorage.setItem('promoShown', 'true'); 
-                    }, 3000);
-                }
-            } catch (e) {
-                console.error("Error with promo dates:", e);
-            }
+    // Function to check if a promo is currently active
+    function isPromoActive() {
+        if (!promo || !promo.startDate || !promo.endDate) return false;
+        try {
+            const today = new Date();
+            const [startYear, startMonth, startDay] = promo.startDate.split('-').map(Number);
+            const [endYear, endMonth, endDay] = promo.endDate.split('-').map(Number);
+            const startDate = new Date(startYear, startMonth - 1, startDay);
+            const endDate = new Date(endYear, endMonth - 1, endDay);
+            endDate.setHours(23, 59, 59, 999);
+            return (today >= startDate && today <= endDate);
+        } catch (e) {
+            console.error("Error with promo dates:", e);
+            return false;
         }
-        // Always add the close button listener
-        closePromoBtn.addEventListener('click', () => promoPopup.classList.add('hidden'));
+    }
+
+    // Function to show the marquee
+    function showMarquee() {
+        if (marqueeText && marqueeContainer && isPromoActive()) {
+            marqueeText.innerText = `${promo.line1} --- ${promo.line2}`;
+            marqueeContainer.classList.remove('hidden');
+        }
+    }
+
+    // Popup Logic
+    if (promoPopup && closePromoBtn) {
+        const lastShown = localStorage.getItem('promoLastShown');
+        const oneHour = 3600 * 1000; // 1 hour in milliseconds
+        const now = new Date().getTime();
+
+        // Check if promo is active AND (it has never been shown OR it was shown more than 1 hour ago)
+        if (isPromoActive() && (!lastShown || (now - lastShown > oneHour))) {
+            // Show the popup
+            document.getElementById('promo-line-1').innerText = promo.line1;
+            document.getElementById('promo-line-2').innerText = promo.line2;
+            setTimeout(() => {
+                promoPopup.classList.remove('hidden');
+                // Set the timestamp for NOW
+                localStorage.setItem('promoLastShown', now.toString());
+            }, 3000);
+        } else if (isPromoActive()) {
+            // Promo is active, but popup is suppressed, so just show the marquee
+            showMarquee();
+        }
+
+        // Add listener to the close button
+        closePromoBtn.addEventListener('click', () => {
+            promoPopup.classList.add('hidden');
+            showMarquee(); // Show marquee *after* closing popup
+        });
     }
 
     // --- 4. Shopping Cart Logic ---
+    // (All this code is the same as your last version)
     const cartToggleBtn = document.getElementById('cart-toggle-btn');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartCloseBtn = document.getElementById('cart-close-btn');
