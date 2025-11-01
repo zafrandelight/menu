@@ -15,8 +15,23 @@ body {
     color: var(--text-main);
     line-height: 1.6;
     overflow-x: hidden;
+    /* New styles for footer push */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
-main { max-width: 800px; margin: 0 auto; padding: 10px; }
+main { 
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 10px; 
+    width: 100%; 
+    box-sizing: border-box;
+}
+/* This makes the main content fill the space, pushing footers down */
+main.table-selection-main {
+    flex-grow: 1;
+}
+
 h2 {
     font-size: 1.8em;
     color: var(--gold);
@@ -66,6 +81,7 @@ header {
 /* --- Marquee Bar --- */
 @keyframes marquee {
     0%   { transform: translateX(100%); }
+    90%  { transform: translateX(-100%); }
     100% { transform: translateX(-100%); }
 }
 #marquee-container {
@@ -470,9 +486,8 @@ footer {
     color: var(--text-subtle);
     padding: 20px;
     border-top: 1px solid var(--border-color);
+    margin-top: auto; /* Pushes footer to bottom on flex-column body */
 }
-footer p { margin: 5px 0; }
-.disclaimer { font-style: italic; margin-top: 15px; }
 
 /* --- Site Credit Footer --- */
 .site-credit-footer {
@@ -543,10 +558,7 @@ footer p { margin: 5px 0; }
 
 /* --- Legal Page Styles --- */
 .legal-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    line-height: 1.6;
+    line-height: 1.8;
 }
 .legal-page h3 {
     margin-top: 25px;
@@ -587,8 +599,8 @@ address {
 
 .table-circle-container {
     position: relative;
-    width: 300px; /* Base size for mobile */
-    height: 300px;
+    width: 320px; /* Base size for mobile */
+    height: 320px;
     margin: 50px auto;
     display: flex;
     align-items: center;
@@ -627,13 +639,13 @@ address {
     margin-left: -30px; /* Half of width */
     margin-top: -30px; /* Half of height */
     transform-origin: 50% 50%;
-    /* 140px = (300px / 2) - (60px / 2) */
-    transform: rotate(var(--angle)) translate(140px) rotate(calc(-1 * var(--angle)));
+    /* 150px = (320px / 2) - (60px / 2) */
+    transform: rotate(var(--angle)) translate(150px) rotate(calc(-1 * var(--angle)));
 }
 .table-btn:hover {
     background-color: var(--gold);
     color: #000;
-    transform: rotate(var(--angle)) translate(140px) rotate(calc(-1 * var(--angle))) scale(1.1);
+    transform: rotate(var(--angle)) translate(150px) rotate(calc(-1 * var(--angle))) scale(1.1);
 }
 
 /* This is the pre-selected style for Table 1 */
@@ -641,12 +653,12 @@ address {
 .table-btn.selected:hover {
     background-color: var(--gold);
     color: #000;
-    transform: rotate(var(--angle)) translate(140px) rotate(calc(-1 * var(--angle))) scale(1.1);
+    transform: rotate(var(--angle)) translate(150px) rotate(calc(-1 * var(--angle))) scale(1.1);
 }
 
 .center-food-image {
-    width: 150px; /* Size of the image in the center */
-    height: 150px;
+    width: 160px; /* Size of the image in the center */
+    height: 160px;
     object-fit: cover;
     border-radius: 50%;
     border: 4px solid var(--gold);
@@ -686,22 +698,22 @@ address {
 
     /* Make clock larger on PC */
     .table-circle-container {
-        width: 400px;
-        height: 400px;
+        width: 450px;
+        height: 450px;
     }
     .table-btn {
-        /* 170px = (400px / 2) - (60px / 2) */
-        transform: rotate(var(--angle)) translate(170px) rotate(calc(-1 * var(--angle)));
+        /* 210px = (450px / 2) - (60px / 2) - approx */
+        transform: rotate(var(--angle)) translate(210px) rotate(calc(-1 * var(--angle)));
     }
     .table-btn:hover {
-        transform: rotate(var(--angle)) translate(170px) rotate(calc(-1 * var(--angle))) scale(1.1);
+        transform: rotate(var(--angle)) translate(210px) rotate(calc(-1 * var(--angle))) scale(1.1);
     }
     .table-btn.selected,
     .table-btn.selected:hover {
-        transform: rotate(var(--angle)) translate(170px) rotate(calc(-1 * var(--angle))) scale(1.1);
+        transform: rotate(var(--angle)) translate(210px) rotate(calc(-1 * var(--angle))) scale(1.1);
     }
     .center-food-image {
-        width: 200px;
-        height: 200px;
+        width: 220px;
+        height: 220px;
     }
 }
