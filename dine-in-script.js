@@ -6,10 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // --- 1. Get Table Number from URL ---
     const params = new URLSearchParams(window.location.search);
-    tableNumber = params.get('table') || "Table?";
+    tableNumber = params.get('table') || "Unknown";
     
-    const cartTitle = document.getElementById('cart-title');
-    if(cartTitle) cartTitle.innerText = `Your Order (Table ${tableNumber})`;
+    // NEW: Find the new heading element and set its text
+    const formboldTableTitleEl = document.getElementById('formbold-table-title');
+    if(formboldTableTitleEl) {
+        formboldTableTitleEl.innerText = `Table ${tableNumber} Order`;
+    }
 
     // --- 2. Nav Scroller ---
     const navLinksContainer = document.getElementById('nav-links-container');
