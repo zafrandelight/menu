@@ -1,4 +1,4 @@
-/* --- Global Styles & Colors --- */
+/* --- Global Styles & Colors --- */ 
 :root {
     --bg-dark: #1a1a1a;
     --card-bg: #2a2a2a;
@@ -607,6 +607,7 @@ address {
         font-size: 0.9em;
     }
 }
+
 
 
 
