@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=16'); // Match v=16
+        const response = await fetch('config.json?v=19'); // Match v=19
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -54,23 +54,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     const closePromoBtn = document.getElementById('close-popup');
 
     if (promoPopup && closePromoBtn && promo.startDate && promo.endDate) {
-        try {
-            const today = new Date();
-            const [startYear, startMonth, startDay] = promo.startDate.split('-').map(Number);
-            const [endYear, endMonth, endDay] = promo.endDate.split('-').map(Number);
+        
+        // NEW: Check if popup has already been shown this session
+        if (sessionStorage.getItem('promoShown') === 'true') {
+            // It has been shown, so do nothing.
+        } else {
+            // It has not been shown, so check the dates
+            try {
+                const today = new Date();
+                const [startYear, startMonth, startDay] = promo.startDate.split('-').map(Number);
+                const [endYear, endMonth, endDay] = promo.endDate.split('-').map(Number);
 
-            const startDate = new Date(startYear, startMonth - 1, startDay);
-            const endDate = new Date(endYear, endMonth - 1, endDay);
-            endDate.setHours(23, 59, 59, 999);
+                const startDate = new Date(startYear, startMonth - 1, startDay);
+                const endDate = new Date(endYear, endMonth - 1, endDay);
+                endDate.setHours(23, 59, 59, 999);
 
-            if (today >= startDate && today <= endDate) {
-                document.getElementById('promo-line-1').innerText = promo.line1;
-                document.getElementById('promo-line-2').innerText = promo.line2;
-                setTimeout(() => promoPopup.classList.remove('hidden'), 3000);
+                if (today >= startDate && today <= endDate) {
+                    document.getElementById('promo-line-1').innerText = promo.line1;
+                    document.getElementById('promo-line-2').innerText = promo.line2;
+                    setTimeout(() => {
+                        promoPopup.classList.remove('hidden');
+                        // NEW: Set the flag so it doesn't show again this session
+                        sessionStorage.setItem('promoShown', 'true'); 
+                    }, 3000);
+                }
+            } catch (e) {
+                console.error("Error with promo dates:", e);
             }
-        } catch (e) {
-            console.error("Error with promo dates:", e);
         }
+        // Always add the close button listener
         closePromoBtn.addEventListener('click', () => promoPopup.classList.add('hidden'));
     }
 
