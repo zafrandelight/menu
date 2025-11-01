@@ -370,7 +370,6 @@ li:last-child { border-bottom: none; }
     font-weight: normal;
     color: var(--text-subtle);
     margin-top: 0;
-    display: inline; /* This is the fix */
 }
 .consent-checkbox a {
     color: var(--gold);
@@ -543,3 +542,4 @@ footer p { margin: 5px 0; }
         font-size: 0.9em;
     }
 }
+
