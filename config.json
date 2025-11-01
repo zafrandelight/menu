@@ -6,12 +6,20 @@
     "endDate": "2025-11-30"
   },
   "whatsappNumber": "4917660173800",
+  "featuredCouponCode": "SAVE15",
   "coupons": [
     {
       "code": "LAMM2",
       "discountType": "fixed",
       "value": 2.00,
       "appliesToCategory": "lamm",
+      "minValue": 0
+    },
+        {
+      "code": "HAHN2",
+      "discountType": "fixed",
+      "value": 2.00,
+      "appliesToCategory": "chicken",
       "minValue": 0
     },
     {
@@ -26,7 +34,7 @@
       "discountType": "percent",
       "value": 0.10,
       "appliesToCategory": "all",
-      "minValue": 30
+      "minValue": 20
     }
   ]
 }
