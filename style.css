@@ -139,7 +139,7 @@ nav {
 nav a {
     flex: 0 0 auto;
     padding: 8px 15px;
-    margin: 0 5px;
+    margin: 0 5px; /* This is for mobile */
     color: var(--gold);
     text-decoration: none;
     font-weight: 600;
@@ -308,6 +308,8 @@ footer p {
         flex-grow: 0;
         justify-content: center;
         flex-wrap: wrap; /* Allow wrapping */
+        padding: 5px 0; /* Add some padding for the container */
+        gap: 10px; /* THIS IS THE FIX: It adds 10px space between items, including rows */
     }
     .nav-wrapper {
         padding: 0 10px; /* Keep padding consistent */
@@ -316,10 +318,9 @@ footer p {
         display: none !important;
     }
 
-    /* --- THIS IS THE FIX --- */
     nav a {
         padding: 8px 15px;
-        margin: 5px; /* Adds 5px space on ALL sides (top, bottom, left, right) */
+        margin: 0; /* Remove margin, let 'gap' handle spacing */
         font-size: 0.9em;
     }
 }
