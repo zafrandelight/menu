@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=22'); // Match v=22
+        const response = await fetch('config.json?v=21'); // Match v=21
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -49,12 +49,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(updateArrowVisibility, 100);
     }
 
-    // --- 3. DYNAMIC Promotional Popup & Static Bar ---
+    // --- 3. DYNAMIC Promotional Popup & Marquee ---
     const promo = config.promoPopup;
     const promoPopup = document.getElementById('popup-overlay');
     const closePromoBtn = document.getElementById('close-popup');
-    const promoBarContainer = document.getElementById('promo-bar-container');
-    const promoBarText = document.getElementById('promo-bar-text');
+    const marqueeContainer = document.getElementById('marquee-container');
+    const marqueeText = document.getElementById('marquee-text');
 
     function isPromoActive() {
         if (!promo || !promo.startDate || !promo.endDate) return false;
@@ -72,42 +72,61 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Function to show the static promo bar
-    function showPromoBar() {
-        if (promoBarText && promoBarContainer && isPromoActive()) {
-            promoBarText.innerText = `${promo.line1} --- ${promo.line2}`;
-            promoBarContainer.classList.remove('hidden');
+    function showMarquee() {
+        if (marqueeText && marqueeContainer && isPromoActive()) {
+            // This now combines all three lines from your request
+            const promoText = [
+                "Mittagsangebot 12:00 bis 14:00 Uhr: alle Veggie- & Chickengerichte je 10,- €.",
+                "Buffet jeden letzten Sonntag im Monat von 14:00 bis 21:00 Uhr, nur 20,- € pro Person.",
+                "Kinder unter 6 Jahren sind frei. Kinder bis 14 Jahren sind 15,- € pro Person"
+            ];
+            marqueeText.innerText = promoText.join(" --- "); // Join with separators
+            marqueeContainer.classList.remove('hidden');
         }
     }
     
+    // --- NEW: Marquee Pause/Play Listeners ---
+    if (marqueeContainer) {
+        marqueeContainer.addEventListener('mouseover', () => {
+            marqueeText.classList.add('paused');
+        });
+        marqueeContainer.addEventListener('mouseout', () => {
+            marqueeText.classList.remove('paused');
+        });
+        marqueeContainer.addEventListener('touchstart', () => {
+            marqueeText.classList.add('paused');
+        }, { passive: true });
+        marqueeContainer.addEventListener('touchend', () => {
+            marqueeText.classList.remove('paused');
+        });
+    }
+    // --- END NEW ---
+
     // Popup Logic
     if (promoPopup && closePromoBtn) {
         const lastShown = localStorage.getItem('promoLastShown');
         const twentyFourHours = 24 * 60 * 60 * 1000;
         const now = new Date().getTime();
 
-        // Check if promo is active AND (it has never been shown OR it was shown more than 24 hours ago)
         if (isPromoActive() && (!lastShown || (now - lastShown > twentyFourHours))) {
             document.getElementById('promo-line-1').innerText = promo.line1;
             document.getElementById('promo-line-2').innerText = promo.line2;
             setTimeout(() => {
                 promoPopup.classList.remove('hidden');
-                // Set the timestamp for NOW
                 localStorage.setItem('promoLastShown', now.toString());
             }, 3000);
         } else if (isPromoActive()) {
-            // Promo is active, but popup is suppressed, so just show the static bar
-            showPromoBar();
+            showMarquee(); // Show marquee immediately if popup is skipped
         }
 
-        // Add listener to the close button
         closePromoBtn.addEventListener('click', () => {
             promoPopup.classList.add('hidden');
-            showPromoBar(); // Show static bar *after* closing popup
+            showMarquee(); // Show marquee immediately when popup is closed
         });
     }
 
     // --- 4. Shopping Cart Logic ---
+    // (All this code is the same as your last version)
     const cartToggleBtn = document.getElementById('cart-toggle-btn');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartCloseBtn = document.getElementById('cart-close-btn');
@@ -127,26 +146,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
     
-    // NEW: Coupon Hint Element
-    const couponHintEl = document.getElementById('coupon-hint');
-
-    // --- NEW: Load Featured Coupon Hint ---
-    if (config.featuredCouponCode && couponHintEl) {
-        const featuredCoupon = config.coupons.find(c => c.code === config.featuredCouponCode);
-        if (featuredCoupon) {
-            let hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value * 100}% off`;
-            if (featuredCoupon.discountType === 'fixed') {
-                hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value.toFixed(2)}€ off`;
-            }
-            if (featuredCoupon.minValue > 0) {
-                hintText += ` on orders over ${featuredCoupon.minValue.toFixed(2)}€!`;
-            }
-            couponHintEl.innerText = hintText;
-            couponHintEl.classList.remove('hidden');
-        }
-    }
-
-
     const consentCheckbox = document.getElementById('privacy-consent');
     const orderForm = document.getElementById('order-form');
     const emailSubmitBtn = orderForm.querySelector('.checkout-email');
