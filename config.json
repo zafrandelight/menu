@@ -7,8 +7,17 @@
   },
   "whatsappNumber": "4917660173800",
   "coupons": [
-    { "code": "LAMM2", "discountType": "fixed", "value": 2.00 },
-    { "code": "10PROZENT", "discountType": "percent", "value": 0.10 },
-    { "code": "WELCOME5", "discountType": "fixed", "value": 5.00 }
+    {
+      "code": "LAMM2",
+      "discountType": "fixed",
+      "value": 2.00,
+      "appliesToCategory": "lamm"
+    },
+    {
+      "code": "10PROZENT",
+      "discountType": "percent",
+      "value": 0.10,
+      "appliesToCategory": "all"
+    }
   ]
 }
