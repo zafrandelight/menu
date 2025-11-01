@@ -22,7 +22,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Main content is wrapped to 800px */
+/* Main content is wrapped to 800px BY DEFAULT (for mobile/tablet) */
 main {
     max-width: 800px;
     margin: 0 auto;
@@ -59,7 +59,7 @@ header {
 
 /* This wrapper aligns the Logo/Contact info */
 .header-content-wrapper {
-    max-width: 800px;
+    max-width: 800px; /* Default width */
     margin: 0 auto;
     padding: 0 10px; /* Matches main padding */
 }
@@ -115,7 +115,7 @@ nav {
 
 /* This wrapper aligns the nav to the 800px main content */
 .nav-wrapper {
-    max-width: 800px;
+    max-width: 800px; /* Default width */
     margin: 0 auto;
     padding: 0 10px; /* Matches main padding */
     display: flex;
@@ -285,6 +285,21 @@ footer p {
 
 /* --- PC/Large Screen Layout --- */
 @media (min-width: 1024px) {
+
+    /* --- THIS IS THE NEW FIX --- */
+    /* Make the entire page content wider on PC */
+    main {
+        max-width: 1000px;
+    }
+    .header-content-wrapper {
+        max-width: 1000px;
+    }
+    .nav-wrapper {
+        max-width: 1000px;
+    }
+    /* --- END NEW FIX --- */
+
+
     .header-content {
         padding: 20px 0; /* Larger PC padding */
     }
@@ -307,20 +322,19 @@ footer p {
         overflow-x: visible;
         flex-grow: 0;
         justify-content: center;
-        flex-wrap: nowrap; /* Force one line */
+        flex-wrap: nowrap; /* We want one line */
     }
     .nav-wrapper {
-        padding: 0 10px; /* Keep padding consistent */
+        padding: 0 10px;
     }
     .scroll-arrow {
         display: none !important;
     }
 
-    /* --- THIS IS THE NEW FIX (MORE AGGRESSIVE) --- */
-    /* Reduce padding/margin just for PC to fit on one line */
+    /* We can use the default button size again, remove the old fix */
     nav a {
-        padding: 8px 10px; /* Even tighter horizontal padding */
-        margin: 0 2px;    /* Even tighter margin */
-        font-size: 0.85em; /* Slightly smaller font if needed */
+        padding: 8px 15px;
+        margin: 0 5px;
+        font-size: 0.9em;
     }
 }
