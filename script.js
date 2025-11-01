@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=7'); // Match v=7
+        const response = await fetch('config.json?v=8'); // Match v=8
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const id = button.dataset.id;
             const name = button.dataset.name;
             const price = parseFloat(button.dataset.price);
-            const category = button.dataset.category; // NEW: Get category
+            const category = button.dataset.category; // Get category
             addToCart(id, name, price, category);
         });
     });
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (existingItem) {
             existingItem.quantity++;
         } else {
-            cart.push({ id, name, price, category, quantity: 1 }); // NEW: Save category in cart
+            cart.push({ id, name, price, category, quantity: 1 }); // Save category in cart
         }
         updateCart();
     }
@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
-            appliedCoupon = null;
+            appliedCoupon = null; // Reset coupon if cart is empty
         }
 
         cart.forEach(item => {
@@ -154,43 +154,37 @@ document.addEventListener("DOMContentLoaded", async () => {
         let discountAmount = 0;
         if (appliedCoupon) {
             let discountableSubtotal = 0;
+            const category = appliedCoupon.appliesToCategory.toLowerCase();
 
-            if (appliedCoupon.appliesToCategory === "all") {
-                // Discount applies to the whole cart
+            if (category === "all") {
                 discountableSubtotal = subtotal;
             } else {
-                // Discount applies ONLY to specific category
                 cart.forEach(item => {
-                    if (item.category === appliedCoupon.appliesToCategory) {
+                    if (item.category.toLowerCase() === category) {
                         discountableSubtotal += item.price * item.quantity;
                     }
                 });
             }
 
-            // Calculate the discount
             if (appliedCoupon.discountType === 'fixed') {
-                // "Fixed" now means a fixed amount *per qualifying item*
-                // e.g., "LAMM2" is 2€ off *each* lamb dish
-                let applicableItems = 0;
+                 let applicableItems = 0;
                 cart.forEach(item => {
-                    if (item.category === appliedCoupon.appliesToCategory) {
+                    if (item.category.toLowerCase() === category) {
                         applicableItems += item.quantity;
                     }
                 });
                 discountAmount = appliedCoupon.value * applicableItems;
             } 
             else if (appliedCoupon.discountType === 'percent') {
-                // "Percent" applies to the subtotal of qualifying items
                 discountAmount = discountableSubtotal * appliedCoupon.value;
             }
             
-            discountAmount = Math.min(subtotal, discountAmount); // Don't discount more than the total
+            discountAmount = Math.min(subtotal, discountAmount);
             
             if (discountAmount > 0) {
                 summaryDiscountEl.classList.remove('hidden');
                 discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
             } else {
-                // We applied a code, but it didn't match any items
                 summaryDiscountEl.classList.add('hidden');
                 couponMessageEl.innerText = `Code valid, but no matching items in cart.`;
                 couponMessageEl.className = 'error';
@@ -198,8 +192,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         } else {
             summaryDiscountEl.classList.add('hidden');
-            couponMessageEl.innerText = "";
-            couponCodeInput.value = "";
+            if (couponMessageEl.innerText !== "Invalid code.") { // Don't clear "invalid" message
+                 couponMessageEl.innerText = "";
+                 couponCodeInput.value = "";
+            }
         }
         
         let total = subtotal - discountAmount;
@@ -228,7 +224,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (item.quantity <= 0) {
             cart = cart.filter(item => item.id !== id);
         }
-        // When quantity changes, must recalculate cart
         updateCart();
     }
 
@@ -238,18 +233,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         const coupon = config.coupons.find(c => c.code.toUpperCase() === code);
 
         if (coupon) {
-            // Check if cart contains items from this category
-            if (coupon.appliesToCategory !== "all") {
-                const hasMatchingItem = cart.some(item => item.category === coupon.appliesToCategory);
+            const category = coupon.appliesToCategory.toLowerCase();
+            if (category !== "all") {
+                const hasMatchingItem = cart.some(item => item.category.toLowerCase() === category);
                 if (!hasMatchingItem) {
                     appliedCoupon = null;
-                    couponMessageEl.innerText = `You need a '${coupon.appliesToCategory}' item to use this code.`;
+                    couponMessageEl.innerText = `You need a '${category}' item to use this code.`;
                     couponMessageEl.className = 'error';
                     updateCart();
                     return;
                 }
             }
-            // All checks passed
             appliedCoupon = coupon;
             couponMessageEl.innerText = `Code "${coupon.code}" applied!`;
             couponMessageEl.className = 'success';
@@ -258,7 +252,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             couponMessageEl.innerText = "Invalid code.";
             couponMessageEl.className = 'error';
         }
-        // Recalculate cart totals with/without coupon
         updateCart();
     });
 
@@ -308,3 +301,75 @@ document.addEventListener("DOMContentLoaded", async () => {
         }).finally(() => {
             submitButton.innerText = "Send via Email";
             submitButton.disabled = false;
+        });
+    });
+
+    // WhatsApp Submit
+    whatsappBtn.addEventListener('click', () => {
+        const name = document.getElementById('customer-name').value;
+        const phone = document.getElementById('customer-phone').value;
+        if (!name || !phone) {
+            alert("Please enter your name and phone number.");
+            return;
+        }
+        const { summaryText, total, discountText } = generateOrderSummary();
+        
+        const WHATSAPP_NUMBER = config.whatsappNumber;
+        if (!WHATSAPP_NUMBER) {
+            alert("WhatsApp number is not configured.");
+            return;
+        }
+
+        let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
+        let encodedMessage = encodeURIComponent(whatsappMessage);
+        let whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+        window.open(whatsappURL, '_blank');
+    });
+
+    function generateOrderSummary() {
+        let summaryText = "";
+        let subtotal = 0;
+        cart.forEach(item => {
+            summaryText += `${item.quantity}x ${item.name} (${(item.price * item.quantity).toFixed(2)} €)\n`;
+            subtotal += item.price * item.quantity;
+        });
+
+        let discountAmount = 0;
+        let discountText = "";
+        if (appliedCoupon) {
+            let discountableSubtotal = 0;
+            const category = appliedCoupon.appliesToCategory.toLowerCase();
+
+            if (category === "all") {
+                discountableSubtotal = subtotal;
+            } else {
+                cart.forEach(item => {
+                    if (item.category.toLowerCase() === category) {
+                        discountableSubtotal += item.price * item.quantity;
+                    }
+                });
+            }
+
+            if (appliedCoupon.discountType === 'fixed') {
+                 let applicableItems = 0;
+                cart.forEach(item => {
+                    if (item.category.toLowerCase() === category) {
+                        applicableItems += item.quantity;
+                    }
+                });
+                discountAmount = appliedCoupon.value * applicableItems;
+            } 
+            else if (appliedCoupon.discountType === 'percent') {
+                discountAmount = discountableSubtotal * appliedCoupon.value;
+            }
+            discountAmount = Math.min(subtotal, discountAmount);
+            
+            if(discountAmount > 0) {
+                 discountText = `Discount (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
+            }
+        }
+        
+        let total = subtotal - discountAmount;
+        return { summaryText, subtotal, discountText, total };
+    }
+});
