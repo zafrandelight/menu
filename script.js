@@ -1,11 +1,10 @@
 // Function to dynamically set the scroll-padding-top
 function updateScrollPadding() {
-    const header = document.querySelector('header');
-    if (header) {
-        // Get the height of the header
-        const headerHeight = header.offsetHeight;
-        // Set a CSS variable on the html element
-        document.documentElement.style.setProperty('scroll-padding-top', `${headerHeight}px`);
+    // UPDATED: Now targets the 'nav' element
+    const stickyNav = document.querySelector('nav');
+    if (stickyNav) {
+        const navHeight = stickyNav.offsetHeight;
+        document.documentElement.style.setProperty('scroll-padding-top', `${navHeight}px`);
     }
 }
 
@@ -16,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const popupOverlay = document.getElementById('popup-overlay');
     const closePopupButton = document.getElementById('close-popup');
 
-    // Show popup after a delay
     setTimeout(() => {
         if (popupOverlay) {
             popupOverlay.classList.remove('hidden');
@@ -48,11 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const scrollAmount = 150;
 
         const updateArrowVisibility = () => {
-            // Check if we can scroll right
             const maxScroll = navLinksContainer.scrollWidth - navLinksContainer.clientWidth;
-            scrollRightBtn.classList.toggle('hidden', navLinksContainer.scrollLeft >= maxScroll - 1); // -1 for precision
-            
-            // Check if we can scroll left
+            scrollRightBtn.classList.toggle('hidden', navLinksContainer.scrollLeft >= maxScroll - 1);
             scrollLeftBtn.classList.toggle('hidden', navLinksContainer.scrollLeft <= 0);
         };
 
@@ -67,14 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
         navLinksContainer.addEventListener('scroll', updateArrowVisibility);
         window.addEventListener('resize', updateArrowVisibility);
         
+        // Use ResizeObserver to detect content changes (like images loading)
+        // that might affect scroll width.
+        if (typeof ResizeObserver === 'function') {
+            new ResizeObserver(updateArrowVisibility).observe(navLinksContainer);
+        }
+        
         // Initial check
         updateArrowVisibility();
     }
 
     // --- 3. Dynamic Scroll Padding ---
-    // Initial call when page loads
     updateScrollPadding();
 });
 
-// Also update on window resize, as header height will change
+// Also update on window resize
 window.addEventListener('resize', updateScrollPadding);
