@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=20'); // Match v=20
+        const response = await fetch('config.json?v=21'); // Match v=21
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -493,3 +493,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
+
