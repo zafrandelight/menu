@@ -357,16 +357,17 @@ li:last-child { border-bottom: none; }
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
-    align-items: flex-start;       /* Align checkbox to top of label */
-    justify-content: flex-start;   /* Align entire group to the left */
-    flex-wrap: wrap;               /* Allow label text to wrap */
-    max-width: 100%;               /* Prevent overflow */
-    gap: 10px;                     /* Space between checkbox and label */
+    align-items: center;         /* Vertically center checkbox and label */
+    justify-content: flex-start; /* Align everything to the left */
+    white-space: nowrap;         /* Prevent label from wrapping */
+    overflow: hidden;            /* Hide any overflow if it happens */
+    text-overflow: ellipsis;     /* Optional: adds "..." if text overflows */
+    max-width: 100%;             /* Keeps it within container bounds */
+    gap: 10px;                   /* Space between checkbox and label */
 }
 
 .consent-checkbox input {
     flex-shrink: 0;
-    margin-top: 4px;               /* Align checkbox with label baseline */
 }
 
 .consent-checkbox label {
@@ -374,7 +375,7 @@ li:last-child { border-bottom: none; }
     font-weight: normal;
     color: var(--text-subtle);
     line-height: 1.4;
-    max-width: calc(100% - 40px);  /* Prevent label from overflowing */
+    white-space: nowrap;         /* Prevent label text from wrapping */
 }
 
 .consent-checkbox a {
@@ -548,6 +549,7 @@ footer p { margin: 5px 0; }
         font-size: 0.9em;
     }
 }
+
 
 
 
