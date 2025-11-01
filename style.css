@@ -14,7 +14,7 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-main);
     line-height: 1.6;
-    overflow-x: hidden; /* This prevents horizontal scrolling */
+    overflow-x: hidden;
 }
 main { max-width: 800px; margin: 0 auto; padding: 10px; }
 h2 {
@@ -353,7 +353,7 @@ li:last-child { border-bottom: none; }
     resize: vertical;
 }
 
-/* --- Consent Checkbox --- */
+/* --- Consent Checkbox FIX --- */
 .consent-checkbox {
     margin-top: 20px;
     display: flex;
