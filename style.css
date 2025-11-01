@@ -340,7 +340,9 @@ li:last-child { border-bottom: none; }
     margin-top: 10px;
     font-weight: bold;
 }
-#order-form input {
+#order-form input,
+/* NEW: Style for the Notes textarea */
+#order-form textarea {
     width: 100%;
     padding: 8px;
     box-sizing: border-box;
@@ -348,7 +350,10 @@ li:last-child { border-bottom: none; }
     border: 1px solid var(--border-color);
     background-color: #333;
     color: var(--text-main);
+    font-family: inherit; /* Make it use the same font as the site */
+    resize: vertical; /* Allow vertical resize, not horizontal */
 }
+
 .checkout-buttons {
     display: flex;
     flex-direction: column;
@@ -397,7 +402,7 @@ footer {
 footer p { margin: 5px 0; }
 .disclaimer { font-style: italic; margin-top: 15px; }
 
-/* --- NEW: Site Credit Footer --- */
+/* --- Site Credit Footer --- */
 .site-credit-footer {
     background-color: #111;
     color: var(--text-subtle);
