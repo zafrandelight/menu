@@ -399,7 +399,7 @@ footer p { margin: 5px 0; }
 .hidden { display: none !important; }
 
 
-/* --- RESTORED PROMO POPUP STYLES --- */
+/* --- PROMO POPUP STYLES --- */
 #popup-overlay {
     position: fixed;
     top: 0;
