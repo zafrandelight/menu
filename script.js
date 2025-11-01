@@ -2,11 +2,20 @@
 // 1. ADD YOUR WHATSAPP NUMBER HERE (with country code, no + or 00)
 const WHATSAPP_NUMBER = "49123456789"; // Example: "49123456789" (for Germany)
 
+// 2. ADD YOUR COUPON CODES HERE
+const COUPON_CODES = [
+    // { code: "CODE_NAME", discountType: "fixed" or "percent", value: amount }
+    // "fixed" value is in Euros (e.g., 2.00 = 2€)
+    // "percent" value is a decimal (e.g., 0.10 = 10%)
+    { code: "LAMM2", discountType: "fixed", value: 2.00 },
+    { code: "10PROZENT", discountType: "percent", value: 0.10 }
+];
 // --- END CONFIGURATION ---
 
 
-// Global cart variable
+// Global cart variables
 let cart = [];
+let appliedCoupon = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -33,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
             scrollRightBtn.classList.toggle('hidden', navLinksContainer.scrollLeft >= maxScroll - 1);
             scrollLeftBtn.classList.toggle('hidden', navLinksContainer.scrollLeft <= 0);
         };
-
         scrollLeftBtn.addEventListener('click', () => navLinksContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' }));
         scrollRightBtn.addEventListener('click', () => navLinksContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' }));
         navLinksContainer.addEventListener('scroll', updateArrowVisibility);
@@ -58,8 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartCloseBtn = document.getElementById('cart-close-btn');
     const addButtons = document.querySelectorAll('.add-btn');
     const cartItemsContainer = document.getElementById('cart-items-container');
-    const cartTotalEl = document.getElementById('cart-total');
     const cartItemCountEl = document.getElementById('cart-item-count');
+
+    // Price/Summary Elements
+    const subtotalAmountEl = document.getElementById('subtotal-amount');
+    const discountAmountEl = document.getElementById('discount-amount');
+    const totalAmountEl = document.getElementById('total-amount');
+    const summaryDiscountEl = document.getElementById('summary-discount');
+    
+    // Coupon Elements
+    const applyCouponBtn = document.getElementById('apply-coupon-btn');
+    const couponCodeInput = document.getElementById('coupon-code');
+    const couponMessageEl = document.getElementById('coupon-message');
 
     // Show/Hide Cart Modal
     if (cartToggleBtn) cartToggleBtn.addEventListener('click', () => cartOverlay.classList.remove('hidden'));
@@ -86,16 +104,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateCart() {
-        // Clear the cart UI
         cartItemsContainer.innerHTML = "";
-        let total = 0;
+        let subtotal = 0;
         let itemCount = 0;
 
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = "<p>Ihr Warenkorb ist leer.</p>";
+            appliedCoupon = null; // Reset coupon if cart is empty
+        }
+
         cart.forEach(item => {
-            // Create cart item element
             const itemEl = document.createElement('div');
             itemEl.classList.add('cart-item');
-            
             itemEl.innerHTML = `
                 <span class="cart-item-name">${item.name}</span>
                 <div class="cart-item-controls">
@@ -106,19 +126,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="cart-item-price">${(item.price * item.quantity).toFixed(2)} €</span>
             `;
             cartItemsContainer.appendChild(itemEl);
-
-            total += item.price * item.quantity;
+            subtotal += item.price * item.quantity;
             itemCount += item.quantity;
         });
 
-        // Update total price and item count
-        cartTotalEl.innerText = `Gesamt: ${total.toFixed(2)} €`;
+        // Calculate Discount
+        let discountAmount = 0;
+        if (appliedCoupon) {
+            if (appliedCoupon.discountType === 'fixed') {
+                discountAmount = appliedCoupon.value;
+            } else if (appliedCoupon.discountType === 'percent') {
+                discountAmount = subtotal * appliedCoupon.value;
+            }
+            // Ensure discount is not more than total
+            discountAmount = Math.min(subtotal, discountAmount);
+            
+            summaryDiscountEl.classList.remove('hidden');
+            discountAmountEl.innerText = `-${discountAmount.toFixed(2)} €`;
+        } else {
+            summaryDiscountEl.classList.add('hidden');
+        }
+        
+        let total = subtotal - discountAmount;
+
+        // Update Totals UI
+        subtotalAmountEl.innerText = `${subtotal.toFixed(2)} €`;
+        totalAmountEl.innerText = `${total.toFixed(2)} €`;
         cartItemCountEl.innerText = itemCount;
         
-        // Show or hide the floating cart button
         cartToggleBtn.classList.toggle('hidden', itemCount === 0);
-
-        // Add event listeners for the new +/- buttons
         addCartItemControls();
     }
 
@@ -134,58 +170,76 @@ document.addEventListener("DOMContentLoaded", () => {
     function adjustQuantity(id, amount) {
         const item = cart.find(item => item.id === id);
         if (!item) return;
-
         item.quantity += amount;
         if (item.quantity <= 0) {
-            // Remove item from cart if quantity is 0 or less
             cart = cart.filter(item => item.id !== id);
         }
         updateCart();
     }
 
-    // --- 5. Checkout Logic ---
+    // --- 5. Coupon Logic ---
+    applyCouponBtn.addEventListener('click', () => {
+        const code = couponCodeInput.value.trim().toUpperCase();
+        const coupon = COUPON_CODES.find(c => c.code.toUpperCase() === code);
+
+        if (coupon) {
+            appliedCoupon = coupon;
+            couponMessageEl.innerText = `Code "${coupon.code}" angewendet!`;
+            couponMessageEl.className = 'success';
+        } else {
+            appliedCoupon = null;
+            couponMessageEl.innerText = "Ungültiger Code.";
+            couponMessageEl.className = 'error';
+        }
+        updateCart();
+    });
+
+    // --- 6. Checkout Logic ---
     const orderForm = document.getElementById('order-form');
     const whatsappBtn = document.getElementById('whatsapp-btn');
     
-    // Option 1: Formspree Email Submit
     orderForm.addEventListener('submit', (e) => {
-        // Prepare the form for submission
         const { summaryText, total } = generateOrderSummary();
         document.getElementById('order-details-input').value = summaryText;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
-        // Let the form submit normally
     });
 
-    // Option 2: WhatsApp Submit
     whatsappBtn.addEventListener('click', () => {
         const name = document.getElementById('customer-name').value;
         const phone = document.getElementById('customer-phone').value;
-
         if (!name || !phone) {
             alert("Bitte geben Sie Ihren Namen und Ihre Telefonnummer an.");
             return;
         }
-
-        const { summaryText, total } = generateOrderSummary();
-        
-        let whatsappMessage = `*Neue Abhol-Bestellung*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n*Gesamt: ${total.toFixed(2)} €*`;
-        
-        // Encode for URL
+        const { summaryText, total, discountText } = generateOrderSummary();
+        let whatsappMessage = `*Neue Abhol-Bestellung*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n${discountText}*Gesamt: ${total.toFixed(2)} €*`;
         let encodedMessage = encodeURIComponent(whatsappMessage);
         let whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-        
         window.open(whatsappURL, '_blank');
     });
 
     function generateOrderSummary() {
         let summaryText = "";
-        let total = 0;
+        let subtotal = 0;
         
         cart.forEach(item => {
             summaryText += `${item.quantity}x ${item.name} (${(item.price * item.quantity).toFixed(2)} €)\n`;
-            total += item.price * item.quantity;
+            subtotal += item.price * item.quantity;
         });
 
-        return { summaryText, total };
+        let discountAmount = 0;
+        let discountText = "";
+        if (appliedCoupon) {
+            if (appliedCoupon.discountType === 'fixed') {
+                discountAmount = appliedCoupon.value;
+            } else if (appliedCoupon.discountType === 'percent') {
+                discountAmount = subtotal * appliedCoupon.value;
+            }
+            discountAmount = Math.min(subtotal, discountAmount);
+            discountText = `Rabatt (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
+        }
+        
+        let total = subtotal - discountAmount;
+        return { summaryText, total, discountText };
     }
 });
