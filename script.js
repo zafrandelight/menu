@@ -2,13 +2,13 @@
 let cart = [];
 let appliedCoupon = null;
 
-// --- Main function to load config first --- 
+// --- Main function to load config first ---
 document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=21'); // Match v=21
+        const response = await fetch('config.json?v=23'); // Match v=23
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -32,7 +32,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const scrollLeftBtn = document.getElementById('scroll-left-btn');
     const scrollRightBtn = document.getElementById('scroll-right-btn');
     if (navLinksContainer && scrollLeftBtn && scrollRightBtn) {
-        // (Scroll logic is the same)
         const scrollAmount = 150;
         const updateArrowVisibility = () => {
             const maxScroll = navLinksContainer.scrollWidth - navLinksContainer.clientWidth;
@@ -73,19 +72,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function showMarquee() {
-        if (marqueeText && marqueeContainer && isPromoActive()) {
-            // This now combines all three lines from your request
-            const promoText = [
-                "Mittagsangebot 12:00 bis 14:00 Uhr: alle Veggie- & Chickengerichte je 10,- €.",
-                "Buffet jeden letzten Sonntag im Monat von 14:00 bis 21:00 Uhr, nur 20,- € pro Person.",
-                "Kinder unter 6 Jahren sind frei. Kinder bis 14 Jahren sind 15,- € pro Person"
-            ];
-            marqueeText.innerText = promoText.join(" --- "); // Join with separators
+        // Use the marqueeLines from config.json
+        if (marqueeText && marqueeContainer && config.marqueeLines && config.marqueeLines.length > 0) {
+            marqueeText.innerText = config.marqueeLines.join(" --- "); // Join with separators
             marqueeContainer.classList.remove('hidden');
         }
     }
     
-    // --- NEW: Marquee Pause/Play Listeners ---
     if (marqueeContainer) {
         marqueeContainer.addEventListener('mouseover', () => {
             marqueeText.classList.add('paused');
@@ -100,9 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             marqueeText.classList.remove('paused');
         });
     }
-    // --- END NEW ---
 
-    // Popup Logic
     if (promoPopup && closePromoBtn) {
         const lastShown = localStorage.getItem('promoLastShown');
         const twentyFourHours = 24 * 60 * 60 * 1000;
@@ -115,18 +106,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 promoPopup.classList.remove('hidden');
                 localStorage.setItem('promoLastShown', now.toString());
             }, 10000);
-        } else if (isPromoActive()) {
-            showMarquee(); // Show marquee immediately if popup is skipped
+            showMarquee(); // Also show the main marquee
+        } else {
+            showMarquee(); // Just show the main marquee
         }
 
         closePromoBtn.addEventListener('click', () => {
             promoPopup.classList.add('hidden');
-            showMarquee(); // Show marquee immediately when popup is closed
+            // No need to call showMarquee(), it's already running
         });
     }
 
     // --- 4. Shopping Cart Logic ---
-    // (All this code is the same as your last version)
     const cartToggleBtn = document.getElementById('cart-toggle-btn');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartCloseBtn = document.getElementById('cart-close-btn');
@@ -146,6 +137,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
     
+    // --- THIS IS THE MISSING CODE ---
+    const couponHintEl = document.getElementById('coupon-hint');
+    if (config.featuredCouponCode && couponHintEl) {
+        const featuredCoupon = config.coupons.find(c => c.code === config.featuredCouponCode);
+        if (featuredCoupon) {
+            let hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value * 100}% off`;
+            if (featuredCoupon.discountType === 'fixed') {
+                hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value.toFixed(2)}€ off`;
+            }
+            if (featuredCoupon.minValue > 0) {
+                hintText += ` on orders over ${featuredCoupon.minValue.toFixed(2)}€!`;
+            }
+            couponHintEl.innerText = hintText;
+            couponHintEl.classList.remove('hidden');
+        }
+    }
+    // --- END OF MISSING CODE ---
+
     const consentCheckbox = document.getElementById('privacy-consent');
     const orderForm = document.getElementById('order-form');
     const emailSubmitBtn = orderForm.querySelector('.checkout-email');
@@ -499,5 +508,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
-
-
