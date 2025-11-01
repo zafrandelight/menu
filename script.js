@@ -8,12 +8,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=21'); // Match v=21
+        const response = await fetch('config.json?v=22'); // Match v=22
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
         // If config fails, use empty defaults
-        config = { promoPopup: {}, coupons: [], whatsappNumber: "" };
+        config = { promoPopup: {}, coupons: [], whatsappNumber: "", featuredCouponCode: "" };
     }
 
     // --- 1. Sticky Header Scroll Padding ---
@@ -49,12 +49,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(updateArrowVisibility, 100);
     }
 
-    // --- 3. DYNAMIC Promotional Popup & Marquee ---
+    // --- 3. DYNAMIC Promotional Popup & Static Bar ---
     const promo = config.promoPopup;
     const promoPopup = document.getElementById('popup-overlay');
     const closePromoBtn = document.getElementById('close-popup');
-    const marqueeContainer = document.getElementById('marquee-container');
-    const marqueeText = document.getElementById('marquee-text');
+    const promoBarContainer = document.getElementById('promo-bar-container');
+    const promoBarText = document.getElementById('promo-bar-text');
 
     function isPromoActive() {
         if (!promo || !promo.startDate || !promo.endDate) return false;
@@ -72,55 +72,42 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    function showMarquee() {
-        if (marqueeText && marqueeContainer && isPromoActive()) {
-            marqueeText.innerText = `${promo.line1} --- ${promo.line2}`;
-            marqueeContainer.classList.remove('hidden');
+    // Function to show the static promo bar
+    function showPromoBar() {
+        if (promoBarText && promoBarContainer && isPromoActive()) {
+            promoBarText.innerText = `${promo.line1} --- ${promo.line2}`;
+            promoBarContainer.classList.remove('hidden');
         }
     }
     
-    // --- NEW: Marquee Pause/Play Listeners ---
-    if (marqueeContainer) {
-        marqueeContainer.addEventListener('mouseover', () => {
-            marqueeText.classList.add('paused');
-        });
-        marqueeContainer.addEventListener('mouseout', () => {
-            marqueeText.classList.remove('paused');
-        });
-        marqueeContainer.addEventListener('touchstart', () => {
-            marqueeText.classList.add('paused');
-        }, { passive: true });
-        marqueeContainer.addEventListener('touchend', () => {
-            marqueeText.classList.remove('paused');
-        });
-    }
-    // --- END NEW ---
-
     // Popup Logic
     if (promoPopup && closePromoBtn) {
         const lastShown = localStorage.getItem('promoLastShown');
-        const oneHour = 3600 * 1000;
+        const twentyFourHours = 24 * 60 * 60 * 1000;
         const now = new Date().getTime();
 
-        if (isPromoActive() && (!lastShown || (now - lastShown > oneHour))) {
+        // Check if promo is active AND (it has never been shown OR it was shown more than 24 hours ago)
+        if (isPromoActive() && (!lastShown || (now - lastShown > twentyFourHours))) {
             document.getElementById('promo-line-1').innerText = promo.line1;
             document.getElementById('promo-line-2').innerText = promo.line2;
             setTimeout(() => {
                 promoPopup.classList.remove('hidden');
+                // Set the timestamp for NOW
                 localStorage.setItem('promoLastShown', now.toString());
             }, 3000);
         } else if (isPromoActive()) {
-            showMarquee(); // Show marquee immediately if popup is skipped
+            // Promo is active, but popup is suppressed, so just show the static bar
+            showPromoBar();
         }
 
+        // Add listener to the close button
         closePromoBtn.addEventListener('click', () => {
             promoPopup.classList.add('hidden');
-            showMarquee(); // Show marquee immediately when popup is closed
+            showPromoBar(); // Show static bar *after* closing popup
         });
     }
 
     // --- 4. Shopping Cart Logic ---
-    // (All this code is the same as your last version)
     const cartToggleBtn = document.getElementById('cart-toggle-btn');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartCloseBtn = document.getElementById('cart-close-btn');
@@ -140,6 +127,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
     
+    // NEW: Coupon Hint Element
+    const couponHintEl = document.getElementById('coupon-hint');
+
+    // --- NEW: Load Featured Coupon Hint ---
+    if (config.featuredCouponCode && couponHintEl) {
+        const featuredCoupon = config.coupons.find(c => c.code === config.featuredCouponCode);
+        if (featuredCoupon) {
+            let hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value * 100}% off`;
+            if (featuredCoupon.discountType === 'fixed') {
+                hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value.toFixed(2)}€ off`;
+            }
+            if (featuredCoupon.minValue > 0) {
+                hintText += ` on orders over ${featuredCoupon.minValue.toFixed(2)}€!`;
+            }
+            couponHintEl.innerText = hintText;
+            couponHintEl.classList.remove('hidden');
+        }
+    }
+
+
     const consentCheckbox = document.getElementById('privacy-consent');
     const orderForm = document.getElementById('order-form');
     const emailSubmitBtn = orderForm.querySelector('.checkout-email');
