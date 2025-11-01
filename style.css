@@ -117,23 +117,28 @@ section {
 li {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: flex-start; /* Aligns item name to top */
     padding: 15px 0;
     border-bottom: 1px dashed var(--border-color);
 }
 li:last-child { border-bottom: none; }
-.item { display: flex; flex-direction: column; padding-right: 15px; }
+.item { display: flex; flex-direction: column; padding-right: 15px; flex-grow: 1; }
 .item strong { font-size: 1.1em; color: var(--text-main); }
 .description { font-size: 0.9em; color: var(--text-subtle); font-style: italic; }
+
+/* --- NEW: Price & Action Button Group --- */
+.price-action {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between price and button */
+    flex-shrink: 0; /* Prevents this group from shrinking */
+}
 .price {
     font-size: 1.1em;
     font-weight: bold;
     color: var(--gold);
     white-space: nowrap;
-    padding-left: 10px;
 }
-
-/* --- NEW: Add to Cart Button --- */
 .add-btn {
     background-color: var(--gold);
     color: #000;
@@ -151,7 +156,7 @@ li:last-child { border-bottom: none; }
     transform: scale(0.9);
 }
 
-/* --- NEW: Floating Cart Button --- */
+/* --- Floating Cart Button --- */
 #cart-toggle-btn {
     position: fixed;
     bottom: 20px;
@@ -183,7 +188,7 @@ li:last-child { border-bottom: none; }
     font-size: 0.8em;
 }
 
-/* --- NEW: Cart Modal --- */
+/* --- Cart Modal --- */
 #cart-overlay {
     position: fixed;
     top: 0;
@@ -223,18 +228,12 @@ li:last-child { border-bottom: none; }
 }
 #cart-modal h2 { margin-top: 0; color: var(--gold); }
 #cart-items-container {
-    max-height: 300px;
+    max-height: 250px;
     overflow-y: auto;
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     margin: 15px 0;
     padding: 10px 0;
-}
-#cart-total {
-    font-size: 1.3em;
-    font-weight: bold;
-    text-align: right;
-    color: var(--gold);
 }
 
 /* Cart Item Styling */
@@ -259,7 +258,67 @@ li:last-child { border-bottom: none; }
 .cart-item-controls span { margin: 0 10px; }
 .cart-item-price { font-weight: bold; }
 
-/* Checkout Form */
+/* --- NEW: Coupon & Summary --- */
+.coupon-area {
+    display: flex;
+    gap: 5px;
+    margin-top: 15px;
+    align-items: stretch;
+}
+.coupon-area label { display: none; }
+.coupon-area input {
+    flex-grow: 1;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: #333;
+    color: var(--text-main);
+}
+#apply-coupon-btn {
+    background-color: #555;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 5px;
+    padding: 0 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+#apply-coupon-btn:hover { background-color: #666; }
+#coupon-message {
+    font-size: 0.9em;
+    margin-top: 5px;
+    height: 1.2em; /* Reserve space */
+}
+#coupon-message.success { color: #25D366; }
+#coupon-message.error { color: #ff4d4d; }
+
+#cart-summary {
+    margin-top: 15px;
+    text-align: right;
+}
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+#summary-discount {
+    color: #25D366;
+    font-size: 1em;
+}
+#summary-total {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--gold);
+    border-top: 1px dashed var(--gold);
+    padding-top: 10px;
+    margin-top: 10px;
+}
+#summary-total span:first-child { text-align: left; }
+
+
+/* --- Checkout Form --- */
 #order-form label {
     display: block;
     margin-top: 10px;
@@ -288,14 +347,8 @@ li:last-child { border-bottom: none; }
     border-radius: 5px;
     cursor: pointer;
 }
-.checkout-email {
-    background-color: var(--gold);
-    color: #000;
-}
-.checkout-whatsapp {
-    background-color: #25D366; /* WhatsApp Green */
-    color: #fff;
-}
+.checkout-email { background-color: var(--gold); color: #000; }
+.checkout-whatsapp { background-color: #25D366; color: #fff; }
 
 
 /* --- Footer & Other --- */
