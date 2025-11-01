@@ -307,7 +307,7 @@ footer p {
         overflow-x: visible;
         flex-grow: 0;
         justify-content: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap; /* Force one line */
     }
     .nav-wrapper {
         padding: 0 10px; /* Keep padding consistent */
@@ -316,10 +316,11 @@ footer p {
         display: none !important;
     }
 
-    /* --- THIS IS THE NEW FIX --- */
+    /* --- THIS IS THE NEW FIX (MORE AGGRESSIVE) --- */
     /* Reduce padding/margin just for PC to fit on one line */
     nav a {
-        padding: 8px 11px; /* Tighter horizontal padding */
-        margin: 0 3px;    /* Tighter margin */
+        padding: 8px 10px; /* Even tighter horizontal padding */
+        margin: 0 2px;    /* Even tighter margin */
+        font-size: 0.85em; /* Slightly smaller font if needed */
     }
 }
