@@ -4,9 +4,7 @@ let cart = [];
 
 let appliedCoupon = null;
 
-// --- CONFIGURATION ---
-const ESTIMATED_READY_TIME_MINUTES = "30-40"; // SET YOUR TIME ESTIMATE HERE
-// --- END CONFIGURATION ---
+
 
 // --- Main function to load config first ---
 
@@ -322,10 +320,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const whatsappBtn = document.getElementById('whatsapp-btn');
 
-    const finalOrderNumberEl = document.getElementById('final-order-number');
-
-    const timeEstimateEl = document.getElementById('time-estimate');
-
     
 
     if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
@@ -420,7 +414,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (cart.length === 0) {
 
-            cartItemsContainer.innerHTML = "<p>Ihr Warenkorb ist leer.</p>";
+            cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
 
             appliedCoupon = null;
 
@@ -472,7 +466,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             let isValid = true;
 
-            let validationMessage = `Code "${appliedCoupon.code}" angewendet!`;
+            let validationMessage = `Code "${appliedCoupon.code}" applied!`;
 
             let validationClass = 'success';
 
@@ -484,7 +478,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 isValid = false;
 
-                validationMessage = `Mindestbestellwert von ${minValue.toFixed(2)} € nicht erreicht. Coupon entfernt.`;
+                validationMessage = `Your total is now below ${minValue.toFixed(2)} €. Coupon removed.`;
 
                 validationClass = 'error';
 
@@ -504,7 +498,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                         isValid = false;
 
-                        validationMessage = `Coupon entfernt (keine passenden Artikel im Warenkorb).`;
+                        validationMessage = `Coupon removed (no matching items in cart).`;
 
                         validationClass = 'error';
 
@@ -566,7 +560,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     discountAmount = appliedCoupon.value * applicableItems;
 
-                    discountText = `Rabatt (${appliedCoupon.code})`;
+                    discountText = `Discount (${appliedCoupon.code})`;
 
                 } 
 
@@ -574,7 +568,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     discountAmount = discountableSubtotal * appliedCoupon.value;
 
-                    discountText = `Rabatt (${(appliedCoupon.value * 100).toFixed(0)}%)`;
+                    discountText = `Discount (${(appliedCoupon.value * 100).toFixed(0)}%)`;
 
                 }
 
@@ -710,7 +704,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (currentSubtotal < minValue) {
 
-                couponMessageEl.innerText = ``Mindestbestellwert:  ${minValue.toFixed(2)} €.`;
+                couponMessageEl.innerText = `You must spend at least ${minValue.toFixed(2)} € to use this code.`;
 
                 couponMessageEl.className = 'error';
 
@@ -730,7 +724,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 if (!hasMatchingItem) {
 
-                    couponMessageEl.innerText = `Code nicht gültig für diese Artikel - '${category}'`;
+                    couponMessageEl.innerText = `You need a '${category}' item to use this code.`;
 
                     couponMessageEl.className = 'error';
 
@@ -746,13 +740,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             appliedCoupon = coupon;
 
-            couponMessageEl.innerText = `Code "${coupon.code}" angewendet!`;
+            couponMessageEl.innerText = `Code "${coupon.code}" applied!`;
 
             couponMessageEl.className = 'success';
 
         } else {
 
-            couponMessageEl.innerText = "Ungültiger Code.";
+            couponMessageEl.innerText = "Invalid code.";
 
             couponMessageEl.className = 'error';
 
@@ -770,10 +764,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         e.preventDefault();
 
-  
         const { summaryText, total, discountText } = generateOrderSummary();
-
-        const orderNumber = Math.floor(100000 + Math.random() * 900000);
 
         const customerName = document.getElementById('customer-name').value;
 
@@ -781,17 +772,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const customerNotes = document.getElementById('customer-notes').value;
 
-        document.getElementById('form-title-input').value = `Abhol-Bestellung #${orderNumber} von: ${customerName}`;
+
 
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
 
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
 
-        document.getElementById('order-number-input').value = `#${orderNumber}`; // Send order num
+
 
         const formData = new FormData(orderForm);
 
-        emailSubmitBtn.innerText = "Sende...";
+        emailSubmitBtn.innerText = "Sending...";
 
         emailSubmitBtn.disabled = true;
 
@@ -809,19 +800,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (response.ok) {
 
-                let finalSummary = `Kunde: ${customerName}\nTelefon: ${customerPhone}\n\n${summaryText}\n${discountText}Gesamtbetrag: ${total.toFixed(2)} €`;
+                let finalSummary = `Customer: ${customerName}\nPhone: ${customerPhone}\n\n${summaryText}\n${discountText}Total: ${total.toFixed(2)} €`;
 
                 if (customerNotes) {
 
-                    finalSummary += `\n\nAnmerkungen:\n${customerNotes}`;
+                    finalSummary += `\n\nNotes:\n${customerNotes}`;
 
                 }
 
                 
-                finalOrderNumberEl.innerText = `#${orderNumber}`;
 
-                timeEstimateEl.innerText = `ca. ${ESTIMATED_READY_TIME_MINUTES} Minuten`;
-                
                 confirmationSummaryEl.innerText = finalSummary;
 
                 cartContentEl.classList.add('hidden');
@@ -848,7 +836,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     } else {
 
-                        alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
+                        alert("Error sending order. Please try again later.");
 
                     }
 
@@ -858,11 +846,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         }).catch(error => {
 
-            alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
+            alert("Error sending order. Please check your internet connection.");
 
         }).finally(() => {
 
-            emailSubmitBtn.innerText = "Per E-Mail senden";
+            emailSubmitBtn.innerText = "Send via Email";
 
             toggleCheckoutButtons();
 
@@ -886,14 +874,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!name || !phone) {
 
-           alert("Bitte geben Sie Ihren Namen und Ihre Telefonnummer an.");
+            alert("Please enter your name and phone number.");
 
             return;
 
         }
 
-        const orderNumber = Math.floor(100000 + Math.random() * 900000);
-        
         const { summaryText, total, discountText } = generateOrderSummary();
 
         
@@ -902,7 +888,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!WHATSAPP_NUMBER) {
 
-            alert("WhatsApp-Nummer ist nicht konfiguriert.");
+            alert("WhatsApp number is not configured.");
 
             return;
 
@@ -910,13 +896,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-        let whatsappMessage = `*Neue Abhol-Bestellung (#${orderNumber})*\n*Geschätzte Abholzeit: ${ESTIMATED_READY_TIME_MINUTES} Minuten*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n${discountText}*Gesamtbetrag:  ${total.toFixed(2)} €*`;
+        let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
 
         
 
         if (notes) {
 
-            whatsappMessage += `\n\n*Anmerkungen:*\n${notes}`;
+            whatsappMessage += `\n\n*Notes:*\n${notes}`;
 
         }
 
@@ -1010,7 +996,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if(discountAmount > 0) {
 
-                 discountText = `Rabatt (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
+                 discountText = `Discount (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
 
             }
 
