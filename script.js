@@ -104,6 +104,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // --- 4. Shopping Cart Logic ---
+    
+    // --- BUG FIX: Defined these variables in the correct order ---
+    const orderForm = document.getElementById('order-form');
+    const consentCheckbox = document.getElementById('privacy-consent');
+    const emailSubmitBtn = orderForm.querySelector('.checkout-email');
+    const whatsappBtn = document.getElementById('whatsapp-btn');
+    // --- END BUG FIX ---
+
     const cartToggleBtn = document.getElementById('cart-toggle-btn');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartCloseBtn = document.getElementById('cart-close-btn');
@@ -124,10 +132,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const couponHintEl = document.getElementById('coupon-hint');
     const finalOrderNumberEl = document.getElementById('final-order-number');
     const timeEstimateEl = document.getElementById('time-estimate');
-    const consentCheckbox = document.getElementById('privacy-consent');
-    const orderForm = document.getElementById('order-form');
-    const emailSubmitBtn = orderForm.querySelector('.checkout-email');
-    const whatsappBtn = document.getElementById('whatsapp-btn');
 
     if (config.featuredCouponCode && couponHintEl) {
         const featuredCoupon = config.coupons.find(c => c.code === config.featuredCouponCode);
