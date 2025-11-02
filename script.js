@@ -1,4 +1,4 @@
-// Global cart variables
+// Global cart variables 
 let cart = [];
 let appliedCoupon = null;
 
