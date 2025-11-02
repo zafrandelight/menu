@@ -1020,46 +1020,46 @@
             <button id="cart-close-btn">&times;</button>
             
             <div id="cart-content">
-                <h2>Your Order</h2>
-                <p>Payment at the restaurant (Cash or Card).</p>
+                <h2>Ihre Bestellung (zur Abholung)</h2>
+                <p>Zahlung erfolgt im Restaurant (Bar oder Karte).</p>
                 
                 <div id="cart-items-container">
                     </div>
                 <p id="coupon-hint" class="hidden"></p>
                 <div class="coupon-area">
-                    <label for="coupon-code">Coupon Code:</label>
+                    <label for="coupon-code">Gutscheincode:</label>
                     <input type="text" id="coupon-code" placeholder="e.g. LAMM2">
-                    <button type="button" id="apply-coupon-btn">Apply</button>
+                    <button type="button" id="apply-coupon-btn">Anwenden</button>
                 </div>
                 <div id="coupon-message"></div>
                 
                 <div id="cart-summary">
                     <div class="summary-line" id="summary-subtotal">
-                        <span>Subtotal:</span>
+                        <span>Zwischensumme:</span>
                         <span id="subtotal-amount">0,00 €</span>
                     </div>
                     <div class="summary-line hidden" id="summary-discount">
-                        <span>Discount:</span>
+                        <span>Rabatt:</span>
                         <span id="discount-amount">-0,00 €</span>
                     </div>
                     <div class="summary-line" id="summary-total">
-                        <span>Total:</span>
+                        <span>Gesamtbetrag:</span>
                         <span id="total-amount">0,00 €</span>
                     </div>
                 </div>
                 
                 <hr>
                 
-                <h3>Your Details</h3>
+                <h3>Ihre Angaben</h3>
                 
                 <form id="order-form" action="https://formbold.com/s/9Xr8q" method="POST">
                     <label for="customer-name">Name:</label>
                     <input type="text" id="customer-name" name="name" required>
                     
-                    <label for="customer-phone">Phone (for questions):</label>
+                    <label for="customer-phone">Telefon (für Rückfragen):</label>
                     <input type="tel" id="customer-phone" name="phone" required>
                     
-                    <label for="customer-notes">Notes (optional for allergies, etc.):</label>
+                    <label for="customer-notes">>Anmerkungen (optional für Allergien etc.):</label>
                     <textarea id="customer-notes" name="notes" rows="3"></textarea>
                     
                     <input type="hidden" id="order-details-input" name="order_details">
@@ -1075,23 +1075,25 @@
 
                     <div class="checkout-buttons">
                         <button type="submit" class="checkout-email">
-                            Send via Email
+                            Per E-Mail senden
                         </button>
                         
                         <button type="button" id="whatsapp-btn" class="checkout-whatsapp">
-                            Send via WhatsApp
+                            Per WhatsApp senden
                         </button>
                     </div>
                 </form>
             </div>
             
             <div id="order-confirmation" class="hidden">
-                <h2>Order Sent!</h2>
-                <p>Thank you, your order has been received and is being prepared.</p>
-                <h3>Your Order Summary:</h3>
+                <h2>Bestellung gesendet!</h2>
+                <p>Vielen Dank, Ihre Bestellung ist eingegangen und wird vorbereitet.</p>
+                <h3 style="color:var(--gold)">Ihre Bestellnummer: <span id="final-order-number"></span></h3>
+                <p style="font-weight:bold;">Geschätzte Abholzeit: <span id="time-estimate"></span></p>
+                <h3>Ihre Bestellübersicht:</h3>
                 <div id="confirmation-summary">
                     </div>
-                <button type="button" id="confirmation-close-btn" class="checkout-email">Close</button>
+                <button type="button" id="confirmation-close-btn" class="checkout-email">Schließen</button>
             </div>
 
         </div>
@@ -1101,13 +1103,14 @@
         <div id="popup-box">
             <h3 id="promo-line-1"></h3>
             <p id="promo-line-2"></p>
-            <button id="close-popup">Close</button>
+            <button id="close-popup">Schließen</button>
         </div>
     </div>
 
     <script src="script.js?v=22"></script>
 </body>
 </html>
+
 
 
 
