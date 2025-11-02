@@ -2,17 +2,18 @@
 let cart = [];
 let appliedCoupon = null;
 
-// --- Main function to load config first ---
+// --- CONFIGURATION ---
+const ESTIMATED_READY_TIME_MINUTES = "30-40"; // SET YOUR TIME ESTIMATE HERE
+// --- END CONFIGURATION ---
+
 document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
     try {
-        // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=23'); // Match v=23
+        const response = await fetch('config.json?v=30'); // Match v=30
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
-        // If config fails, use empty defaults
         config = { promoPopup: {}, coupons: [], whatsappNumber: "", featuredCouponCode: "" };
     }
 
@@ -65,33 +66,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             const endDate = new Date(endYear, endMonth - 1, endDay);
             endDate.setHours(23, 59, 59, 999);
             return (today >= startDate && today <= endDate);
-        } catch (e) {
-            console.error("Error with promo dates:", e);
-            return false;
-        }
+        } catch (e) { return false; }
     }
 
     function showMarquee() {
-        // Use the marqueeLines from config.json
         if (marqueeText && marqueeContainer && config.marqueeLines && config.marqueeLines.length > 0) {
-            marqueeText.innerText = config.marqueeLines.join(" --- "); // Join with separators
+            marqueeText.innerText = config.marqueeLines.join(" --- ");
             marqueeContainer.classList.remove('hidden');
         }
     }
     
     if (marqueeContainer) {
-        marqueeContainer.addEventListener('mouseover', () => {
-            marqueeText.classList.add('paused');
-        });
-        marqueeContainer.addEventListener('mouseout', () => {
-            marqueeText.classList.remove('paused');
-        });
-        marqueeContainer.addEventListener('touchstart', () => {
-            marqueeText.classList.add('paused');
-        }, { passive: true });
-        marqueeContainer.addEventListener('touchend', () => {
-            marqueeText.classList.remove('paused');
-        });
+        marqueeContainer.addEventListener('mouseover', () => { marqueeText.classList.add('paused'); });
+        marqueeContainer.addEventListener('mouseout', () => { marqueeText.classList.remove('paused'); });
+        marqueeContainer.addEventListener('touchstart', () => { marqueeText.classList.add('paused'); }, { passive: true });
+        marqueeContainer.addEventListener('touchend', () => { marqueeText.classList.remove('paused'); });
     }
 
     if (promoPopup && closePromoBtn) {
@@ -105,15 +94,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             setTimeout(() => {
                 promoPopup.classList.remove('hidden');
                 localStorage.setItem('promoLastShown', now.toString());
-            }, 10000);
-            showMarquee(); // Also show the main marquee
-        } else {
-            showMarquee(); // Just show the main marquee
+            }, 3000);
         }
+        showMarquee();
 
         closePromoBtn.addEventListener('click', () => {
             promoPopup.classList.add('hidden');
-            // No need to call showMarquee(), it's already running
         });
     }
 
@@ -124,7 +110,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const addButtons = document.querySelectorAll('.add-btn');
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartItemCountEl = document.getElementById('cart-item-count');
-
     const subtotalAmountEl = document.getElementById('subtotal-amount');
     const discountAmountEl = document.getElementById('discount-amount');
     const totalAmountEl = document.getElementById('total-amount');
@@ -136,30 +121,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     const orderConfirmationEl = document.getElementById('order-confirmation');
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
-    
-    // --- THIS IS THE MISSING CODE ---
     const couponHintEl = document.getElementById('coupon-hint');
+    const finalOrderNumberEl = document.getElementById('final-order-number');
+    const timeEstimateEl = document.getElementById('time-estimate');
+    const consentCheckbox = document.getElementById('privacy-consent');
+    const orderForm = document.getElementById('order-form');
+    const emailSubmitBtn = orderForm.querySelector('.checkout-email');
+    const whatsappBtn = document.getElementById('whatsapp-btn');
+
     if (config.featuredCouponCode && couponHintEl) {
         const featuredCoupon = config.coupons.find(c => c.code === config.featuredCouponCode);
         if (featuredCoupon) {
-            let hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value * 100}% off`;
+            let hintText = `Nutzen Sie Code ${featuredCoupon.code} für ${featuredCoupon.value * 100}% Rabatt`;
             if (featuredCoupon.discountType === 'fixed') {
-                hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value.toFixed(2)}€ off`;
+                hintText = `Nutzen Sie Code ${featuredCoupon.code} für ${featuredCoupon.value.toFixed(2)}€ Rabatt`;
             }
             if (featuredCoupon.minValue > 0) {
-                hintText += ` on orders over ${featuredCoupon.minValue.toFixed(2)}€!`;
+                hintText += ` bei Bestellungen über ${featuredCoupon.minValue.toFixed(2)}€!`;
             }
             couponHintEl.innerText = hintText;
             couponHintEl.classList.remove('hidden');
         }
     }
-    // --- END OF MISSING CODE ---
 
-    const consentCheckbox = document.getElementById('privacy-consent');
-    const orderForm = document.getElementById('order-form');
-    const emailSubmitBtn = orderForm.querySelector('.checkout-email');
-    const whatsappBtn = document.getElementById('whatsapp-btn');
-    
     if (cartToggleBtn) cartToggleBtn.addEventListener('click', openCart);
     if (cartCloseBtn) cartCloseBtn.addEventListener('click', closeCart);
     if (confirmationCloseBtn) confirmationCloseBtn.addEventListener('click', closeCart);
@@ -206,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         let itemCount = 0;
 
         if (cart.length === 0) {
-            cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+            cartItemsContainer.innerHTML = "<p>Ihr Warenkorb ist leer.</p>";
             appliedCoupon = null;
         }
 
@@ -228,17 +212,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         let discountAmount = 0;
-        let discountText = "Discount:";
+        let discountText = "Rabatt:";
 
         if (appliedCoupon) {
             let isValid = true;
-            let validationMessage = `Code "${appliedCoupon.code}" applied!`;
+            let validationMessage = `Code "${appliedCoupon.code}" angewendet!`;
             let validationClass = 'success';
 
             const minValue = appliedCoupon.minValue || 0;
             if (subtotal < minValue) {
                 isValid = false;
-                validationMessage = `Your total is now below ${minValue.toFixed(2)} €. Coupon removed.`;
+                validationMessage = `Mindestbestellwert von ${minValue.toFixed(2)} € nicht erreicht. Coupon entfernt.`;
                 validationClass = 'error';
             }
 
@@ -248,7 +232,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const hasMatchingItem = cart.some(item => item.category.toLowerCase() === category);
                     if (!hasMatchingItem) {
                         isValid = false;
-                        validationMessage = `Coupon removed (no matching items in cart).`;
+                        validationMessage = `Coupon entfernt (keine passenden Artikel im Warenkorb).`;
                         validationClass = 'error';
                     }
                 }
@@ -279,11 +263,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                         }
                     });
                     discountAmount = appliedCoupon.value * applicableItems;
-                    discountText = `Discount (${appliedCoupon.code})`;
+                    discountText = `Rabatt (${appliedCoupon.code})`;
                 } 
                 else if (appliedCoupon.discountType === 'percent') {
                     discountAmount = discountableSubtotal * appliedCoupon.value;
-                    discountText = `Discount (${(appliedCoupon.value * 100).toFixed(0)}%)`;
+                    discountText = `Rabatt (${(appliedCoupon.value * 100).toFixed(0)}%)`;
                 }
                 
                 discountAmount = Math.min(subtotal, discountAmount);
@@ -351,7 +335,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
             const minValue = coupon.minValue || 0;
             if (currentSubtotal < minValue) {
-                couponMessageEl.innerText = `You must spend at least ${minValue.toFixed(2)} € to use this code.`;
+                couponMessageEl.innerText = `Mindestbestellwert: ${minValue.toFixed(2)} €.`;
                 couponMessageEl.className = 'error';
                 updateCart();
                 return;
@@ -361,7 +345,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (category !== "all") {
                 const hasMatchingItem = cart.some(item => item.category.toLowerCase() === category);
                 if (!hasMatchingItem) {
-                    couponMessageEl.innerText = `You need a '${category}' item to use this code.`;
+                    couponMessageEl.innerText = `Code nicht gültig für diese Artikel.`;
                     couponMessageEl.className = 'error';
                     updateCart();
                     return;
@@ -369,10 +353,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             appliedCoupon = coupon;
-            couponMessageEl.innerText = `Code "${coupon.code}" applied!`;
+            couponMessageEl.innerText = `Code "${coupon.code}" angewendet!`;
             couponMessageEl.className = 'success';
         } else {
-            couponMessageEl.innerText = "Invalid code.";
+            couponMessageEl.innerText = "Ungültiger Code.";
             couponMessageEl.className = 'error';
         }
         updateCart();
@@ -381,16 +365,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- 6. Checkout Logic (AJAX submission) ---
     orderForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        const orderNumber = Math.floor(100000 + Math.random() * 900000);
         const { summaryText, total, discountText } = generateOrderSummary();
         const customerName = document.getElementById('customer-name').value;
         const customerPhone = document.getElementById('customer-phone').value;
         const customerNotes = document.getElementById('customer-notes').value;
 
+        document.getElementById('form-title-input').value = `Abhol-Bestellung #${orderNumber} von: ${customerName}`;
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
+        document.getElementById('order-number-input').value = `#${orderNumber}`;
 
         const formData = new FormData(orderForm);
-        emailSubmitBtn.innerText = "Sending...";
+        emailSubmitBtn.innerText = "Sende...";
         emailSubmitBtn.disabled = true;
 
         fetch(orderForm.action, {
@@ -399,14 +387,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             headers: { 'Accept': 'application/json' }
         }).then(response => {
             if (response.ok) {
-                let finalSummary = `Customer: ${customerName}\nPhone: ${customerPhone}\n\n${summaryText}\n${discountText}Total: ${total.toFixed(2)} €`;
+                let finalSummary = `Kunde: ${customerName}\nTelefon: ${customerPhone}\n\n${summaryText}\n${discountText}Gesamtbetrag: ${total.toFixed(2)} €`;
                 if (customerNotes) {
-                    finalSummary += `\n\nNotes:\n${customerNotes}`;
+                    finalSummary += `\n\nAnmerkungen:\n${customerNotes}`;
                 }
                 
+                finalOrderNumberEl.innerText = `#${orderNumber}`;
+                timeEstimateEl.innerText = `ca. ${ESTIMATED_READY_TIME_MINUTES} Minuten`;
                 confirmationSummaryEl.innerText = finalSummary;
+                
                 cartContentEl.classList.add('hidden');
                 orderConfirmationEl.classList.remove('hidden');
+                
                 cart = [];
                 appliedCoupon = null;
                 orderForm.reset();
@@ -417,14 +409,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (Object.hasOwn(data, 'errors')) {
                         alert(data["errors"].map(error => error["message"]).join(", "));
                     } else {
-                        alert("Error sending order. Please try again later.");
+                        alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
                     }
                 });
             }
         }).catch(error => {
-            alert("Error sending order. Please check your internet connection.");
+            alert("Fehler beim Senden. Bitte prüfen Sie Ihre Internetverbindung.");
         }).finally(() => {
-            emailSubmitBtn.innerText = "Send via Email";
+            emailSubmitBtn.innerText = "Per E-Mail senden";
             toggleCheckoutButtons();
         });
     });
@@ -436,21 +428,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const notes = document.getElementById('customer-notes').value;
         
         if (!name || !phone) {
-            alert("Please enter your name and phone number.");
+            alert("Bitte geben Sie Ihren Namen und Ihre Telefonnummer an.");
             return;
         }
+        const orderNumber = Math.floor(100000 + Math.random() * 900000);
         const { summaryText, total, discountText } = generateOrderSummary();
         
         const WHATSAPP_NUMBER = config.whatsappNumber;
         if (!WHATSAPP_NUMBER) {
-            alert("WhatsApp number is not configured.");
+            alert("WhatsApp-Nummer ist nicht konfiguriert.");
             return;
         }
 
-        let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
+        let whatsappMessage = `*Neue Abhol-Bestellung (#${orderNumber})*\n*Geschätzte Abholzeit: ${ESTIMATED_READY_TIME_MINUTES} Minuten*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n${discountText}*Gesamtbetrag: ${total.toFixed(2)} €*`;
         
         if (notes) {
-            whatsappMessage += `\n\n*Notes:*\n${notes}`;
+            whatsappMessage += `\n\n*Anmerkungen:*\n${notes}`;
         }
 
         let encodedMessage = encodeURIComponent(whatsappMessage);
@@ -497,7 +490,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             discountAmount = Math.min(subtotal, discountAmount);
             
             if(discountAmount > 0) {
-                 discountText = `Discount (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
+                 discountText = `Rabatt (${appliedCoupon.code}): -${discountAmount.toFixed(2)} €\n`;
             }
         }
         
