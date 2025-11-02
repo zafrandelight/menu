@@ -110,9 +110,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             setTimeout(() => {
                 promoPopup.classList.remove('hidden');
                 localStorage.setItem('promoLastShown', now.toString());
-            }, 3000); // 3-second delay for popup
+            }, 10000);
+            showMarquee(); // Also show the main marquee
+        } else {
+            showMarquee(); // Just show the main marquee
         }
-        showMarquee(); // Show marquee immediately
 
         closePromoBtn.addEventListener('click', () => {
             promoPopup.classList.add('hidden');
@@ -139,15 +141,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
     
-    // --- THIS IS THE FIX: Define all variables before using them ---
     const couponHintEl = document.getElementById('coupon-hint');
     const consentCheckbox = document.getElementById('privacy-consent');
     const orderForm = document.getElementById('order-form');
     const emailSubmitBtn = orderForm.querySelector('.checkout-email');
     const whatsappBtn = document.getElementById('whatsapp-btn');
+    
+    // NEW: Define confirmation elements
     const finalOrderNumberEl = document.getElementById('final-order-number');
     const timeEstimateEl = document.getElementById('time-estimate');
-    // --- END FIX ---
     
     if (config.featuredCouponCode && couponHintEl) {
         const featuredCoupon = config.coupons.find(c => c.code === config.featuredCouponCode);
@@ -232,7 +234,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         let discountAmount = 0;
-        let discountText = "Rabatt:";
+        let discountText = "Discount:";
 
         if (appliedCoupon) {
             let isValid = true;
@@ -386,7 +388,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     orderForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        // --- NEW: Generate Order Number ---
+        // NEW: Generate Order Number
         const orderNumber = Math.floor(100000 + Math.random() * 900000);
         
         const { summaryText, total, discountText } = generateOrderSummary();
@@ -394,11 +396,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const customerPhone = document.getElementById('customer-phone').value;
         const customerNotes = document.getElementById('customer-notes').value;
 
-        // --- NEW: Set titles for Formbold ---
+        // NEW: Set titles for Formbold
         document.getElementById('form-title-input').value = `Abhol-Bestellung #${orderNumber} von: ${customerName}`;
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
-        document.getElementById('order-number-input').value = `#${orderNumber}`;
+        document.getElementById('order-number-input').value = `#${orderNumber}`; // Send order num
 
         const formData = new FormData(orderForm);
         emailSubmitBtn.innerText = "Sende...";
@@ -415,7 +417,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     finalSummary += `\n\nAnmerkungen:\n${customerNotes}`;
                 }
                 
-                // --- NEW: Show Order Number and Time ---
+                // NEW: Show Order Number and Time
                 finalOrderNumberEl.innerText = `#${orderNumber}`;
                 timeEstimateEl.innerText = `ca. ${ESTIMATED_READY_TIME_MINUTES} Minuten`;
                 confirmationSummaryEl.innerText = finalSummary;
@@ -456,7 +458,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
         
-        // --- NEW: Generate Order Number ---
+        // NEW: Generate Order Number
         const orderNumber = Math.floor(100000 + Math.random() * 900000);
         const { summaryText, total, discountText } = generateOrderSummary();
         
@@ -466,7 +468,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // --- NEW: Added Order Number and Time to message ---
+        // NEW: Added Order Number and Time
         let whatsappMessage = `*Neue Abhol-Bestellung (#${orderNumber})*\n*Geschätzte Abholzeit: ${ESTIMATED_READY_TIME_MINUTES} Minuten*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n${discountText}*Gesamtbetrag: ${total.toFixed(2)} €*`;
         
         if (notes) {
