@@ -1,4 +1,4 @@
-// Global cart variables 
+// Global cart variables
 let cart = [];
 let appliedCoupon = null;
 
@@ -508,5 +508,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
+
 
 
