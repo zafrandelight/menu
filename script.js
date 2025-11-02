@@ -6,14 +6,18 @@ let appliedCoupon = null;
 const ESTIMATED_READY_TIME_MINUTES = "30-40"; // SET YOUR TIME ESTIMATE HERE
 // --- END CONFIGURATION ---
 
+
+// --- Main function to load config first ---
 document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
     try {
-        const response = await fetch('config.json?v=30'); // Match v=30
+        // Fetch the config file (add cache-buster)
+        const response = await fetch('config.json?v=31'); // Match v=31
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
+        // If config fails, use empty defaults
         config = { promoPopup: {}, coupons: [], whatsappNumber: "", featuredCouponCode: "" };
     }
 
@@ -66,21 +70,33 @@ document.addEventListener("DOMContentLoaded", async () => {
             const endDate = new Date(endYear, endMonth - 1, endDay);
             endDate.setHours(23, 59, 59, 999);
             return (today >= startDate && today <= endDate);
-        } catch (e) { return false; }
+        } catch (e) {
+            console.error("Error with promo dates:", e);
+            return false;
+        }
     }
 
     function showMarquee() {
+        // Use the marqueeLines from config.json
         if (marqueeText && marqueeContainer && config.marqueeLines && config.marqueeLines.length > 0) {
-            marqueeText.innerText = config.marqueeLines.join(" --- ");
+            marqueeText.innerText = config.marqueeLines.join(" --- "); // Join with separators
             marqueeContainer.classList.remove('hidden');
         }
     }
     
     if (marqueeContainer) {
-        marqueeContainer.addEventListener('mouseover', () => { marqueeText.classList.add('paused'); });
-        marqueeContainer.addEventListener('mouseout', () => { marqueeText.classList.remove('paused'); });
-        marqueeContainer.addEventListener('touchstart', () => { marqueeText.classList.add('paused'); }, { passive: true });
-        marqueeContainer.addEventListener('touchend', () => { marqueeText.classList.remove('paused'); });
+        marqueeContainer.addEventListener('mouseover', () => {
+            marqueeText.classList.add('paused');
+        });
+        marqueeContainer.addEventListener('mouseout', () => {
+            marqueeText.classList.remove('paused');
+        });
+        marqueeContainer.addEventListener('touchstart', () => {
+            marqueeText.classList.add('paused');
+        }, { passive: true });
+        marqueeContainer.addEventListener('touchend', () => {
+            marqueeText.classList.remove('paused');
+        });
     }
 
     if (promoPopup && closePromoBtn) {
@@ -94,9 +110,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             setTimeout(() => {
                 promoPopup.classList.remove('hidden');
                 localStorage.setItem('promoLastShown', now.toString());
-            }, 3000);
+            }, 3000); // 3-second delay for popup
         }
-        showMarquee();
+        showMarquee(); // Show marquee immediately
 
         closePromoBtn.addEventListener('click', () => {
             promoPopup.classList.add('hidden');
@@ -104,20 +120,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // --- 4. Shopping Cart Logic ---
-    
-    // --- BUG FIX: Defined these variables in the correct order ---
-    const orderForm = document.getElementById('order-form');
-    const consentCheckbox = document.getElementById('privacy-consent');
-    const emailSubmitBtn = orderForm.querySelector('.checkout-email');
-    const whatsappBtn = document.getElementById('whatsapp-btn');
-    // --- END BUG FIX ---
-
     const cartToggleBtn = document.getElementById('cart-toggle-btn');
     const cartOverlay = document.getElementById('cart-overlay');
     const cartCloseBtn = document.getElementById('cart-close-btn');
     const addButtons = document.querySelectorAll('.add-btn');
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartItemCountEl = document.getElementById('cart-item-count');
+
     const subtotalAmountEl = document.getElementById('subtotal-amount');
     const discountAmountEl = document.getElementById('discount-amount');
     const totalAmountEl = document.getElementById('total-amount');
@@ -129,19 +138,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     const orderConfirmationEl = document.getElementById('order-confirmation');
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
+    
+    // --- THIS IS THE FIX: Define all variables before using them ---
     const couponHintEl = document.getElementById('coupon-hint');
+    const consentCheckbox = document.getElementById('privacy-consent');
+    const orderForm = document.getElementById('order-form');
+    const emailSubmitBtn = orderForm.querySelector('.checkout-email');
+    const whatsappBtn = document.getElementById('whatsapp-btn');
     const finalOrderNumberEl = document.getElementById('final-order-number');
     const timeEstimateEl = document.getElementById('time-estimate');
-
+    // --- END FIX ---
+    
     if (config.featuredCouponCode && couponHintEl) {
         const featuredCoupon = config.coupons.find(c => c.code === config.featuredCouponCode);
         if (featuredCoupon) {
-            let hintText = `Nutzen Sie Code ${featuredCoupon.code} für ${featuredCoupon.value * 100}% Rabatt`;
+            let hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value * 100}% off`;
             if (featuredCoupon.discountType === 'fixed') {
-                hintText = `Nutzen Sie Code ${featuredCoupon.code} für ${featuredCoupon.value.toFixed(2)}€ Rabatt`;
+                hintText = `Use code ${featuredCoupon.code} for ${featuredCoupon.value.toFixed(2)}€ off`;
             }
             if (featuredCoupon.minValue > 0) {
-                hintText += ` bei Bestellungen über ${featuredCoupon.minValue.toFixed(2)}€!`;
+                hintText += ` on orders over ${featuredCoupon.minValue.toFixed(2)}€!`;
             }
             couponHintEl.innerText = hintText;
             couponHintEl.classList.remove('hidden');
@@ -370,12 +386,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     orderForm.addEventListener('submit', (e) => {
         e.preventDefault();
         
+        // --- NEW: Generate Order Number ---
         const orderNumber = Math.floor(100000 + Math.random() * 900000);
+        
         const { summaryText, total, discountText } = generateOrderSummary();
         const customerName = document.getElementById('customer-name').value;
         const customerPhone = document.getElementById('customer-phone').value;
         const customerNotes = document.getElementById('customer-notes').value;
 
+        // --- NEW: Set titles for Formbold ---
         document.getElementById('form-title-input').value = `Abhol-Bestellung #${orderNumber} von: ${customerName}`;
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
@@ -396,6 +415,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     finalSummary += `\n\nAnmerkungen:\n${customerNotes}`;
                 }
                 
+                // --- NEW: Show Order Number and Time ---
                 finalOrderNumberEl.innerText = `#${orderNumber}`;
                 timeEstimateEl.innerText = `ca. ${ESTIMATED_READY_TIME_MINUTES} Minuten`;
                 confirmationSummaryEl.innerText = finalSummary;
@@ -435,6 +455,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("Bitte geben Sie Ihren Namen und Ihre Telefonnummer an.");
             return;
         }
+        
+        // --- NEW: Generate Order Number ---
         const orderNumber = Math.floor(100000 + Math.random() * 900000);
         const { summaryText, total, discountText } = generateOrderSummary();
         
@@ -444,6 +466,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        // --- NEW: Added Order Number and Time to message ---
         let whatsappMessage = `*Neue Abhol-Bestellung (#${orderNumber})*\n*Geschätzte Abholzeit: ${ESTIMATED_READY_TIME_MINUTES} Minuten*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n${discountText}*Gesamtbetrag: ${total.toFixed(2)} €*`;
         
         if (notes) {
