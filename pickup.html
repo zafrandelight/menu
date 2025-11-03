@@ -1070,8 +1070,7 @@
                     <div class="consent-checkbox">
                         <input type="checkbox" id="privacy-consent" name="privacy-consent" required>
                         <label for="privacy-consent">
-                            I have read and agree to the 
-                            <a href="privacy.html" target="_blank">Privacy Policy</a>.
+                            I have read and agree to the <a href="privacy.html" target="_blank">Privacy Policy</a>.
                         </label>
                     </div>
 
@@ -1090,6 +1089,8 @@
             <div id="order-confirmation" class="hidden">
                 <h2>Bestellung gesendet!</h2>
                 <p>Vielen Dank, Ihre Bestellung ist eingegangen und wird vorbereitet.</p>
+                <h3 style="color:var(--gold)">Ihre Bestellnummer: <span id="final-order-number"></span></h3>
+                <p style="font-weight:bold;">Geschätzte Abholzeit: <span id="time-estimate"></span></p>
                 <h3>Ihre Bestellübersicht:</h3>
                 <div id="confirmation-summary">
                     </div>
@@ -1107,9 +1108,10 @@
         </div>
     </div>
 
-    <script src="script.js?v=23"></script>
+    <script src="script.js?v=31"></script>
 </body>
 </html>
+
 
 
 
