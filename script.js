@@ -6,7 +6,7 @@ let appliedCoupon = null;
 const ESTIMATED_READY_TIME_MINUTES = "30-40"; // SET YOUR TIME ESTIMATE HERE
 // --- END CONFIGURATION ---
 
-// --- Main function to load config first ---
+// --- Main function to load config first --- 
 document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
@@ -531,4 +531,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
+
 
