@@ -449,6 +449,8 @@ li:last-child { border-bottom: none; }
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
 }
 .checkout-buttons button:disabled {
     background-color: #555;
@@ -717,3 +719,4 @@ address {
         height: 220px;
     }
 }
+
