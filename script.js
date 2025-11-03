@@ -2,13 +2,17 @@
 let cart = [];
 let appliedCoupon = null;
 
+// --- CONFIGURATION ---
+const ESTIMATED_READY_TIME_MINUTES = "30-40"; // SET YOUR TIME ESTIMATE HERE
+// --- END CONFIGURATION ---
+
 // --- Main function to load config first ---
 document.addEventListener("DOMContentLoaded", async () => {
     
     let config;
     try {
         // Fetch the config file (add cache-buster)
-        const response = await fetch('config.json?v=23'); // Match v=23
+        const response = await fetch('config.json?v=32'); // Match v=32
         config = await response.json();
     } catch (error) {
         console.error("Failed to load config.json", error);
@@ -136,6 +140,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const orderConfirmationEl = document.getElementById('order-confirmation');
     const confirmationSummaryEl = document.getElementById('confirmation-summary');
     const confirmationCloseBtn = document.getElementById('confirmation-close-btn');
+    const finalOrderNumberEl = document.getElementById('final-order-number');
+    const timeEstimateEl = document.getElementById('time-estimate');
     
     // --- THIS IS THE MISSING CODE ---
     const couponHintEl = document.getElementById('coupon-hint');
@@ -381,16 +387,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     // --- 6. Checkout Logic (AJAX submission) ---
     orderForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        // NEW: Generate Order Number
+        const orderNumber = Math.floor(100000 + Math.random() * 900000);
+        
         const { summaryText, total, discountText } = generateOrderSummary();
         const customerName = document.getElementById('customer-name').value;
         const customerPhone = document.getElementById('customer-phone').value;
         const customerNotes = document.getElementById('customer-notes').value;
 
+        // NEW: Set titles for Formbold
+        document.getElementById('form-title-input').value = `Abhol-Bestellung #${orderNumber} von: ${customerName}`;
         document.getElementById('order-details-input').value = `${summaryText}\n${discountText}`;
         document.getElementById('order-total-input').value = `${total.toFixed(2)} €`;
+        document.getElementById('order-number-input').value = `#${orderNumber}`; // Send order num
 
         const formData = new FormData(orderForm);
-        emailSubmitBtn.innerText = "Sending...";
+        emailSubmitBtn.innerText = "Sende...";
         emailSubmitBtn.disabled = true;
 
         fetch(orderForm.action, {
@@ -399,14 +412,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             headers: { 'Accept': 'application/json' }
         }).then(response => {
             if (response.ok) {
-                let finalSummary = `Customer: ${customerName}\nPhone: ${customerPhone}\n\n${summaryText}\n${discountText}Total: ${total.toFixed(2)} €`;
+                let finalSummary = `Kunde: ${customerName}\nTelefon: ${customerPhone}\n\n${summaryText}\n${discountText}Gesamtbetrag: ${total.toFixed(2)} €`;
                 if (customerNotes) {
-                    finalSummary += `\n\nNotes:\n${customerNotes}`;
+                    finalSummary += `\n\nAnmerkungen:\n${customerNotes}`;
                 }
                 
+                // NEW: Show Order Number and Time
+                finalOrderNumberEl.innerText = `#${orderNumber}`;
+                timeEstimateEl.innerText = `ca. ${ESTIMATED_READY_TIME_MINUTES} Minuten`;
                 confirmationSummaryEl.innerText = finalSummary;
+                
                 cartContentEl.classList.add('hidden');
                 orderConfirmationEl.classList.remove('hidden');
+                
                 cart = [];
                 appliedCoupon = null;
                 orderForm.reset();
@@ -417,18 +435,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (Object.hasOwn(data, 'errors')) {
                         alert(data["errors"].map(error => error["message"]).join(", "));
                     } else {
-                        alert("Error sending order. Please try again later.");
+                        alert("Fehler beim Senden. Bitte versuchen Sie es später erneut.");
                     }
                 });
             }
         }).catch(error => {
-            alert("Error sending order. Please check your internet connection.");
+            alert("Fehler beim Senden. Bitte prüfen Sie Ihre Internetverbindung.");
         }).finally(() => {
-            emailSubmitBtn.innerText = "Send via Email";
+            emailSubmitBtn.innerText = "Per E-Mail senden";
             toggleCheckoutButtons();
         });
     });
 
+    // WhatsApp Submit
     // WhatsApp Submit
     whatsappBtn.addEventListener('click', () => {
         const name = document.getElementById('customer-name').value;
@@ -436,21 +455,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         const notes = document.getElementById('customer-notes').value;
         
         if (!name || !phone) {
-            alert("Please enter your name and phone number.");
+            alert("Bitte geben Sie Ihren Namen und Ihre Telefonnummer an.");
             return;
         }
+        
+        // NEW: Generate Order Number
+        const orderNumber = Math.floor(100000 + Math.random() * 900000);
         const { summaryText, total, discountText } = generateOrderSummary();
         
         const WHATSAPP_NUMBER = config.whatsappNumber;
         if (!WHATSAPP_NUMBER) {
-            alert("WhatsApp number is not configured.");
+            alert("WhatsApp-Nummer ist nicht konfiguriert.");
             return;
         }
 
-        let whatsappMessage = `*New Pickup Order*\n\n*Customer:* ${name}\n*Phone:* ${phone}\n\n*Order:*\n${summaryText}\n${discountText}*Total: ${total.toFixed(2)} €*`;
+        // NEW: Added Order Number and Time
+        let whatsappMessage = `*Neue Abhol-Bestellung (#${orderNumber})*\n*Geschätzte Abholzeit: ${ESTIMATED_READY_TIME_MINUTES} Minuten*\n\n*Kunde:* ${name}\n*Telefon:* ${phone}\n\n*Bestellung:*\n${summaryText}\n${discountText}*Gesamtbetrag: ${total.toFixed(2)} €*`;
         
         if (notes) {
-            whatsappMessage += `\n\n*Notes:*\n${notes}`;
+            whatsappMessage += `\n\n*Anmerkungen:*\n${notes}`;
         }
 
         let encodedMessage = encodeURIComponent(whatsappMessage);
@@ -508,3 +531,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initial check on page load
     toggleCheckoutButtons();
 });
+
